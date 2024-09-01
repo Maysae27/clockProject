@@ -2,36 +2,43 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: './src/index.ts',
-  devtool: 'source-map',
-  target: 'node',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: /node_modules/
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'] // Loaders for CSS files
+      }
+    ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.ts', '.js']
   },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-  },
-  plugins: [new HtmlWebpackPlugin({
-    title: 'GE Empty Template',
-    template: path.join(process.cwd(), 'src/index.html'),
-    filename: 'index.html',
-  })],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
   devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+    compress: true,
     host: '0.0.0.0',
-    port: '1234',
+    port: 1234,
+    allowedHosts: 'all',
+    hot: false, // Disable Hot Module Replacement
+    liveReload: false, // Disable live reloading
   }
+
 };

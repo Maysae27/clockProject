@@ -1,5 +1,8 @@
-import './index.css';
-import { MyClass } from './example-unit';
+import { ClockModel } from "./Models/clockModel";
+import { ClockView } from "./Views/clockView";
+import { ClockController } from "./Controllers/clockController";
 
-const a = new MyClass(2);
-console.log('number is', a.get());
+
+const clockModel = new ClockModel();
+const clockView = new ClockView(clockModel);
+const clockController = new ClockController(clockModel, clockView);
