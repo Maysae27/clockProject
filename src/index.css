@@ -44,7 +44,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0px; /* No margin around individual clocks */
+    margin-right:50px;
 }
 
 .delete-button {
@@ -93,12 +93,12 @@ body {
     }
 }
 
-.light-on .time-display {
+.light-on  {
     background: #FBE106; /* Yellow background when light is on */
     color: #000; /* Black text when light is on */
 }
 
-.light-off .time-display {
+.light-off {
     background: #000; /* Black background when light is off */
     color: #0f0; /* Green text when light is off */
 }
@@ -127,15 +127,15 @@ button {
 
 .mode-button {
     position: absolute;
-    top: 15%;
-    right: 15%;
+    top: 22%;
+    right: 22%;
     transform: translate(50%, -50%) rotate(45deg);
 }
 
 .increase-button {
     position: absolute;
-    bottom: 15%;
-    right: 15%;
+    bottom: 22%;
+    right: 22%;
     transform: translate(50%, 50%) rotate(-45deg);
 }
 
@@ -144,4 +144,42 @@ button {
     bottom: 15%;
     left: 15%;
     transform: translate(-50%, 50%) rotate(45deg);
+}
+
+.reset-button {
+    position: absolute;
+    top: 15%; /* Adjusted for positioning within the circle */
+    left: 15%; /* Adjusted for positioning within the circle */
+    transform: translate(-50%, -50%) rotate(-45deg); /* Diagonal positioning */
+    background-color: #228B22;
+    color: #f0f0f0;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.reset-button {
+    background-color: #096c39; /* Slightly darker yellow on hover */
+}
+
+.format-button {
+    position: absolute;
+    top: 50%; /* Adjust to place it at the top of the circle */
+    right: 15%; /* Adjust to position it horizontally towards the right side */
+    transform: translate(50%, -50%); /* Center the button within its position */
+    background-color: #228B22; /* Accessible green color */
+    color: #FFF; /* White text color for contrast */
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.format-button:hover {
+    background-color: #1E7A1E; /* Slightly darker green on hover for contrast */
 }

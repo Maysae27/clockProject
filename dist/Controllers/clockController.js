@@ -1,55 +1,56 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClockController = void 0;
+const clockModel_1 = require("../Models/clockModel");
 require("../index.css");
 class ClockController {
-    constructor(model, view) {
-        this.model = model;
+    constructor(models, view) {
+        this.models = models;
         this.view = view;
-        this.initialize();
+        // Set up event listeners for existing clocks and the Add button
+        this.setupEventListeners();
     }
-    initialize() {
-        var _a, _b, _c;
-        (_a = document.getElementById('mode-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => this.handleModeButton());
-        (_b = document.getElementById('increase-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => this.handleIncreaseButton());
-        (_c = document.getElementById('light-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => this.handleLightButton());
-        setInterval(() => {
-            if (this.model.editable === 'none') {
-                // Update the model time
-                const now = new Date();
-                this.model.hours = now.getHours();
-                this.model.minutes = now.getMinutes();
-                this.view.updateDisplay();
-            }
-        }, 1000);
+    setupEventListeners() {
+        this.models.forEach((_, index) => {
+            this.setupClockEventListeners(index);
+        });
+        const addButton = document.getElementById('add-button');
+        if (addButton) {
+            addButton.addEventListener('click', this.addClock.bind(this));
+        }
     }
-    handleModeButton() {
-        if (this.model.editable === 'none') {
-            this.model.editable = 'hours';
+    setupClockEventListeners(index) {
+        const lightButton = document.getElementById(`light-button-${index}`);
+        const modeButton = document.getElementById(`mode-button-${index}`);
+        const increaseButton = document.getElementById(`increase-button-${index}`);
+        const deleteButton = document.getElementById(`delete-button-${index}`);
+        if (lightButton) {
+            lightButton.addEventListener('click', () => {
+                this.models[index].toggleLight();
+                this.view.updateClocks();
+            });
         }
-        else if (this.model.editable === 'hours') {
-            this.model.editable = 'minutes';
+        if (modeButton) {
+            modeButton.addEventListener('click', () => {
+                this.models[index].cycleEditable();
+                this.view.updateClocks();
+            });
         }
-        else {
-            this.model.editable = 'none';
+        if (increaseButton) {
+            increaseButton.addEventListener('click', () => {
+                this.view.increaseTime(index);
+            });
         }
-        this.view.updateDisplay();
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                this.view.deleteClock(index);
+            });
+        }
     }
-    handleIncreaseButton() {
-        this.model.incrementTime();
-        this.view.updateDisplay();
-    }
-    handleLightButton() {
-        const body = document.body;
-        if (body.classList.contains('light-on')) {
-            body.classList.remove('light-on');
-            body.classList.add('light-off');
-        }
-        else {
-            body.classList.remove('light-off');
-            body.classList.add('light-on');
-        }
-        this.view.updateDisplay();
+    addClock() {
+        const newModel = new clockModel_1.ClockModel();
+        this.view.addClock(newModel);
+        this.setupClockEventListeners(this.models.length - 1);
     }
 }
 exports.ClockController = ClockController;
