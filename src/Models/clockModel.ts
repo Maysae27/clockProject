@@ -1,27 +1,38 @@
 export class ClockModel {
     hours: number;
     minutes: number;
-    seconds: number;  // Add seconds
+    seconds: number;
     editable: 'hours' | 'minutes' | 'none';
     isLightOn: boolean;
+    editCycleCount: number;
+    isEditing: boolean;
 
     constructor() {
         const currentTime = new Date();
         this.hours = currentTime.getHours();
         this.minutes = currentTime.getMinutes();
-        this.seconds = currentTime.getSeconds();  // Initialize seconds
+        this.seconds = currentTime.getSeconds();
         this.editable = 'none';
         this.isLightOn = false;
+        this.editCycleCount = 0;
+        this.isEditing = false;
     }
 
     cycleEditable(): void {
-        if (this.editable === 'none') {
-            this.editable = 'hours';
-        } else if (this.editable === 'hours') {
-            this.editable = 'minutes';
-        } else {
-            this.editable = 'none';
+        this.editCycleCount = (this.editCycleCount + 1) % 3;
+
+        switch (this.editCycleCount) {
+            case 0:
+                this.editable = 'none';
+                break;
+            case 1:
+                this.editable = 'hours';
+                break;
+            case 2:
+                this.editable = 'minutes';
+                break;
         }
+        console.log(`Editable set to: ${this.editable}`);
     }
 
     increaseHours(): void {
@@ -47,9 +58,9 @@ export class ClockModel {
     }
 
     advanceTime(): void {
-        const currentTime = new Date();
-        this.hours = currentTime.getHours();
-        this.minutes = currentTime.getMinutes();
-        this.seconds = currentTime.getSeconds();  // Update seconds
+        if (!this.isEditing) {
+            const currentTime = new Date();
+            this.seconds = currentTime.getSeconds();
+        }
     }
 }

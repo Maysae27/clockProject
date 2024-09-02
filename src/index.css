@@ -13,7 +13,7 @@ body {
 .clock {
     width: 300px;
     height: 300px;
-    border: 10px solid #333; /* Add a border around the watch */
+    border: 10px solid #333; /* to add a border around the watch */
     border-radius: 50%;
     position: relative;
     background-color: #6e36ae;
@@ -22,12 +22,13 @@ body {
     justify-content: center;
 }
 
+/* Rectangle inside of which the time is displayed*/
 .time-display {
-    width: 200px; /* Width of the rectangle */
-    height: 100px; /* Height of the rectangle */
-    background: #000; /* Background of the rectangle */
-    color: #0f0; /* Default text color */
-    border: 3px solid #6e36ae; /* Border of the rectangle */
+    width: 200px;
+    height: 100px;
+    background: #000;
+    color: #0f0;
+    border: 3px solid #6e36ae;
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -35,8 +36,6 @@ body {
     font-size: 2em;
     text-align: center;
 }
-
-
 .blinking {
     animation: blink 1s step-start infinite;
 }
@@ -46,8 +45,6 @@ body {
         opacity: 0;
     }
 }
-
-
 
 /* Light mode styles */
 .light-on .time-display {
@@ -68,16 +65,16 @@ body {
     left: 0;
 }
 
-/* Common button styles */
+/* Common button style */
 button {
     position: absolute;
     background-color: #F5C300;
     border: none;
     padding: 10px;
-    border-radius: 4px; /* Make the buttons slightly rounded */
+    border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
-    font-weight: bold; /* Bold text for the buttons */
+    font-weight: bold;
     transform-origin: center;
 }
 
