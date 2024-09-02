@@ -6,6 +6,7 @@ export class ClockModel {
     isLightOn: boolean;
     editCycleCount: number;
     isEditing: boolean;
+    is24HourFormat: boolean;
 
     constructor() {
         const currentTime = new Date();
@@ -16,6 +17,7 @@ export class ClockModel {
         this.isLightOn = false;
         this.editCycleCount = 0;
         this.isEditing = false;
+        this.is24HourFormat = true;
     }
 
     cycleEditable(): void {
@@ -56,11 +58,33 @@ export class ClockModel {
     toggleLight(): void {
         this.isLightOn = !this.isLightOn;
     }
+    toggleFormat(): void {
+        this.is24HourFormat = !this.is24HourFormat;
+        console.log(`Time format toggled. Now 24-hour format is: ${this.is24HourFormat}`);
+    }
+
 
     advanceTime(): void {
         if (!this.isEditing) {
             const currentTime = new Date();
             this.seconds = currentTime.getSeconds();
+        }
+    }
+    getAmPm(): string {
+        if (this.is24HourFormat) {
+            return ''; // Empty string for 24-hour format
+        } else {
+            return this.hours >= 12 ? 'PM' : 'AM';
+        }
+    }
+
+    getFormattedHours(): string {
+        if (this.is24HourFormat) {
+            return this.hours.toString().padStart(2, '0');
+        } else {
+            let hour = this.hours % 12;
+            if (hour === 0) hour = 12; // Handle midnight and noon
+            return hour.toString().padStart(2, '0'); // Return formatted hours only, without "AM/PM"
         }
     }
 }

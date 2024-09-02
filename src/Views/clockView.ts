@@ -62,6 +62,9 @@ export class ClockView {
         const deleteButton = clockElement.querySelector('.delete-button') as HTMLButtonElement;
         deleteButton.id = `delete-button-${index}`;
 
+        const formatButton = clockElement.querySelector('.format-button') as HTMLButtonElement;
+        formatButton.id = `format-button-${index}`;
+
         this.setupClockEventListeners(index); // Ensure event listeners are set up for the new clock
 
         return clockElement;
@@ -129,9 +132,18 @@ export class ClockView {
             const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
 
             if (hoursDisplay && minutesDisplay && secondsDisplay) {
-                hoursDisplay.textContent = model.hours.toString().padStart(2, '0');
+                console.log('update time display')
+                // Update time displays
+                hoursDisplay.textContent = model.getFormattedHours();
                 minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
                 secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
+
+                // Get the AM/PM text
+                const amPmText = model.getAmPm();
+                // Update or append the AM/PM display next to seconds
+                if (amPmText) {
+                    secondsDisplay.textContent += ` ${amPmText}`;
+                }
             }
 
             const timeDisplay = document.getElementById(`time-display-${index}`) as HTMLDivElement;

@@ -30,6 +30,7 @@ export class ClockController {
         const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
         const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
         const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
+        const formatButton = document.getElementById(`format-button-${index}`) as HTMLButtonElement;
 
         if (lightButton) {
             lightButton.addEventListener('click', () => {
@@ -56,6 +57,14 @@ export class ClockController {
                 this.view.deleteClock(index);
             });
         }
+        if (formatButton) {
+            formatButton.addEventListener('click', () => {
+                console.log(`Format button clicked for clock index: ${index}`);
+                this.models[index].toggleFormat(); // Toggle the format in the model
+                this.view.updateClocks(); // Update the clocks to reflect the change
+            });
+        }
+
     }
 
     private addClock(): void {
