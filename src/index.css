@@ -1,28 +1,48 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Optional: Background color for better visibility */
 }
 
-.clock-container {
-    position: relative;
+#add-button {
+    display: block;
+    margin: 20px auto; /* Center the button horizontally with margin at the top */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #F5C300;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
+#add-button:hover {
+    background-color: #F5B000; /* Slightly darker yellow on hover */
+}
+
+/* Container for clocks */
+#clock-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px; /* Adjust the gap between clocks as needed */
+    justify-content: center; /* Center the grid horizontally */
+    padding: 20px; /* Padding around the container */
+}
+
+/* Individual clock styling */
 .clock {
     width: 300px;
     height: 300px;
-    border: 10px solid #333; /* to add a border around the watch */
+    border: 10px solid #333;
     border-radius: 50%;
-    position: relative;
     background-color: #6e36ae;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-/* Rectangle inside of which the time is displayed*/
+
+
 .time-display {
     width: 200px;
     height: 100px;
@@ -36,6 +56,7 @@ body {
     font-size: 2em;
     text-align: center;
 }
+
 .blinking {
     animation: blink 1s step-start infinite;
 }
@@ -46,7 +67,6 @@ body {
     }
 }
 
-/* Light mode styles */
 .light-on .time-display {
     background: #FBE106; /* Yellow background when light is on */
     color: #000; /* Black text when light is on */
@@ -65,9 +85,7 @@ body {
     left: 0;
 }
 
-/* Common button style */
 button {
-    position: absolute;
     background-color: #F5C300;
     border: none;
     padding: 10px;
@@ -75,28 +93,29 @@ button {
     font-size: 12px;
     cursor: pointer;
     font-weight: bold;
-    transform-origin: center;
 }
 
 .button:hover {
-    background-color: #F5C300; /* Darker yellow on hover */
+    background-color: #F5B000; /* Slightly darker yellow on hover */
 }
 
-/* Position buttons perfectly on the circular edge of the clock */
-#mode-button {
+.mode-button {
+    position: absolute;
     top: 15%;
-    right: 15%; /* Mirror the light button horizontally */
-    transform: translate(50%, -50%) rotate(45deg); /* Diagonal top-right */
+    right: 15%;
+    transform: translate(50%, -50%) rotate(45deg);
 }
 
-#increase-button {
+.increase-button {
+    position: absolute;
     bottom: 15%;
     right: 15%;
-    transform: translate(50%, 50%) rotate(-45deg); /* Diagonal bottom-right */
+    transform: translate(50%, 50%) rotate(-45deg);
 }
 
-#light-button {
+.light-button {
+    position: absolute;
     bottom: 15%;
     left: 15%;
-    transform: translate(-50%, 50%) rotate(45deg); /* Diagonal bottom-left */
+    transform: translate(-50%, 50%) rotate(45deg);
 }

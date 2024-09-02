@@ -2,7 +2,8 @@ import { ClockModel } from "./Models/clockModel";
 import { ClockView } from "./Views/clockView";
 import { ClockController } from "./Controllers/clockController";
 
-
-const clockModel = new ClockModel();
-const clockView = new ClockView(clockModel);
-const clockController = new ClockController(clockModel, clockView);
+// Initial setup
+const initialModels = [new ClockModel()]; // Create initial models
+const containerId = 'clock-container'; // Ensure this matches the ID in your HTML
+const clockView = new ClockView(initialModels, containerId);
+const clockController = new ClockController(initialModels, clockView);

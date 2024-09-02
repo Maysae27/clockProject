@@ -1,62 +1,60 @@
 import { ClockModel } from "../Models/clockModel";
-import { ClockView } from "../Views/clockView"
-import '../index.css'
+import { ClockView } from "../Views/clockView";
+import '../index.css';
 
 export class ClockController {
-    private model: ClockModel;
+    private models: ClockModel[];
     private view: ClockView;
 
-    constructor(model: ClockModel, view: ClockView) {
-        this.model = model;
+    constructor(models: ClockModel[], view: ClockView) {
+        this.models = models;
         this.view = view;
 
-        // Set up event listeners for buttons
+        // Set up event listeners for existing clocks and the Add button
         this.setupEventListeners();
     }
+
     private setupEventListeners(): void {
-        this.lightButtonEventListener();
-        this.modeButtonEventListener();
-        this.increaseButtonEventListener();
+        this.models.forEach((_, index) => {
+            this.setupClockEventListeners(index);
+        });
+
+        const addButton = document.getElementById('add-button') as HTMLButtonElement;
+        if (addButton) {
+            addButton.addEventListener('click', () => this.addClock());
+        }
     }
 
-    private lightButtonEventListener(): void {
-        const lightButton = document.getElementById('light-button') as HTMLButtonElement;
+    private setupClockEventListeners(index: number): void {
+        const lightButton = document.getElementById(`light-button-${index}`) as HTMLButtonElement;
+        const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
+        const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
+
         if (lightButton) {
-            lightButton.removeEventListener('click', this.handleLightButtonClick);
-            lightButton.addEventListener('click', this.handleLightButtonClick.bind(this));
+            lightButton.addEventListener('click', () => {
+                this.models[index].toggleLight();
+                this.view.updateClocks();
+            });
         }
-    }
 
-    private modeButtonEventListener(): void {
-        const modeButton = document.getElementById('mode-button') as HTMLButtonElement;
         if (modeButton) {
-            modeButton.removeEventListener('click', this.handleModeButtonClick);
-            modeButton.addEventListener('click', this.handleModeButtonClick.bind(this));
+            modeButton.addEventListener('click', () => {
+                this.models[index].cycleEditable();
+                this.view.updateClocks();
+            });
         }
-    }
 
-    private increaseButtonEventListener(): void {
-        const increaseButton = document.getElementById('increase-button') as HTMLButtonElement;
         if (increaseButton) {
-            increaseButton.removeEventListener('click', this.handleIncreaseButtonClick);
-            increaseButton.addEventListener('click', this.handleIncreaseButtonClick.bind(this));
+            increaseButton.addEventListener('click', () => {
+                this.view.increaseTime(index);
+            });
         }
     }
 
-    private handleLightButtonClick(): void {
-        this.model.toggleLight();
-        this.view.updateDisplay();
+    private addClock(): void {
+        const newModel = new ClockModel();
+        this.models.push(newModel); // Add the model to the list
+        this.view.addClock(newModel); // Update the view with the new clock
+        this.setupClockEventListeners(this.models.length - 1); // Set up event listeners for the new clock
     }
-
-    private handleModeButtonClick(): void {
-        this.model.cycleEditable();
-        this.view.updateDisplay();
-    }
-
-    private handleIncreaseButtonClick(): void {
-        console.log('Increase button clicked');
-        this.view.increaseTime();
-    }
-
-
 }

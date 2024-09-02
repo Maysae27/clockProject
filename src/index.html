@@ -7,22 +7,23 @@
     <link rel="stylesheet" href="bundle.css">
 </head>
 <body>
-<div id="clock-container" class="clock-container">
-
-    <div id="clock" class="clock">
-
-        <div id="time-display" class="time-display">
-            <span id="hours-display"></span>:
-            <span id="minutes-display"></span>:
-            <span id="seconds-display"></span>
+<button id="add-button">Add Clock</button>
+<div id="clock-container">
+    <!-- Template for clocks -->
+    <template id="clock-template">
+        <div class="clock">
+            <div class="time-display">
+                <span class="hours-display"></span>:
+                <span class="minutes-display"></span>:
+                <span class="seconds-display"></span>
+            </div>
+            <div class="buttons-container">
+                <button class="mode-button">Mode</button>
+                <button class="increase-button">Increase</button>
+                <button class="light-button">Light</button>
+            </div>
         </div>
-
-    </div>
-    <div id="buttons-container" class="buttons-container">
-        <button id="mode-button" class="button">Mode</button>
-        <button id="increase-button" class="button">Increase</button>
-        <button id="light-button" class="button">Light</button>
-    </div>
+    </template>
 </div>
 <script src="bundle.js"></script>
 </body>
