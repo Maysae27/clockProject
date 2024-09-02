@@ -9,21 +9,24 @@
 <body>
 <button id="add-button">Add Clock</button>
 <div id="clock-container">
-    <!-- Template for clocks -->
     <template id="clock-template">
-        <div class="clock">
-            <div class="time-display">
-                <span class="hours-display"></span>:
-                <span class="minutes-display"></span>:
-                <span class="seconds-display"></span>
+        <div class="clock-container">
+            <div class="clock">
+                <div class="time-display">
+                    <span class="hours-display"></span>:
+                    <span class="minutes-display"></span>:
+                    <span class="seconds-display"></span>
+                </div>
+                <div class="buttons-container">
+                    <button class="mode-button">Mode</button>
+                    <button class="increase-button">Increase</button>
+                    <button class="light-button">Light</button>
+                </div>
             </div>
-            <div class="buttons-container">
-                <button class="mode-button">Mode</button>
-                <button class="increase-button">Increase</button>
-                <button class="light-button">Light</button>
-            </div>
+            <button class="delete-button">X</button>
         </div>
     </template>
+
 </div>
 <script src="bundle.js"></script>
 </body>

@@ -1,6 +1,6 @@
 import { ClockModel } from "../Models/clockModel";
 import { ClockView } from "../Views/clockView";
-import '../index.css';
+import '../index.css'
 
 export class ClockController {
     private models: ClockModel[];
@@ -21,7 +21,7 @@ export class ClockController {
 
         const addButton = document.getElementById('add-button') as HTMLButtonElement;
         if (addButton) {
-            addButton.addEventListener('click', () => this.addClock());
+            addButton.addEventListener('click', this.addClock.bind(this));
         }
     }
 
@@ -29,6 +29,7 @@ export class ClockController {
         const lightButton = document.getElementById(`light-button-${index}`) as HTMLButtonElement;
         const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
         const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
+        const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
 
         if (lightButton) {
             lightButton.addEventListener('click', () => {
@@ -49,12 +50,17 @@ export class ClockController {
                 this.view.increaseTime(index);
             });
         }
+
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                this.view.deleteClock(index);
+            });
+        }
     }
 
     private addClock(): void {
         const newModel = new ClockModel();
-        this.models.push(newModel); // Add the model to the list
-        this.view.addClock(newModel); // Update the view with the new clock
-        this.setupClockEventListeners(this.models.length - 1); // Set up event listeners for the new clock
+        this.view.addClock(newModel);
+        this.setupClockEventListeners(this.models.length - 1);
     }
 }

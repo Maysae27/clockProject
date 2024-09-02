@@ -19,29 +19,55 @@ body {
     background-color: #F5B000; /* Slightly darker yellow on hover */
 }
 
-/* Container for clocks */
 #clock-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 40px; /* Adjust the gap between clocks as needed */
-    justify-content: center; /* Center the grid horizontally */
-    padding: 20px; /* Padding around the container */
+    display: flex;
+    flex-wrap: wrap; /* Wrap clocks to next line */
+    gap: 20px; /* Space between clocks */
+    justify-content: center; /* Center clocks horizontally */
+    margin: 50px 300px; /* Vertical margin of 50px, horizontal margin of 300px */
+    padding: 50px;
 }
 
-/* Individual clock styling */
+.clock-container {
+    position: relative;
+    border: 5px solid #333; /* Border around the clock */
+    border-radius: 10px; /* Rounded corners for the border */
+    padding: 10px; /* Padding inside the border */
+}
+
 .clock {
-    width: 300px;
-    height: 300px;
+    width: 300px; /* Fixed width for each clock */
+    height: 300px; /* Fixed height for each clock */
     border: 10px solid #333;
-    border-radius: 50%;
+    border-radius: 50%; /* Round clock */
     background-color: #6e36ae;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    margin: 0px; /* No margin around individual clocks */
 }
 
+.delete-button {
+    position: absolute;
+    top: -15px; /* Position above the clock border */
+    right: -15px; /* Position to the right of the clock border */
+    background-color: #F00; /* Red background for delete button */
+    color: #FFF; /* White text */
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
 
+.delete-button:hover {
+    background-color: #C00; /* Darker red on hover */
+}
 
 .time-display {
     width: 200px;

@@ -59,7 +59,67 @@ export class ClockView {
         const lightButton = clockElement.querySelector('.light-button') as HTMLButtonElement;
         lightButton.id = `light-button-${index}`;
 
+        const deleteButton = clockElement.querySelector('.delete-button') as HTMLButtonElement;
+        deleteButton.id = `delete-button-${index}`;
+
+        this.setupClockEventListeners(index); // Ensure event listeners are set up for the new clock
+
         return clockElement;
+    }
+
+    private setupClockEventListeners(index: number): void {
+        const lightButton = document.getElementById(`light-button-${index}`) as HTMLButtonElement;
+        const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
+        const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
+        const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
+
+        if (lightButton) {
+            lightButton.addEventListener('click', () => {
+                this.models[index].toggleLight();
+                this.updateClocks();
+            });
+        }
+
+        if (modeButton) {
+            modeButton.addEventListener('click', () => {
+                this.models[index].cycleEditable();
+                this.updateClocks();
+            });
+        }
+
+        if (increaseButton) {
+            increaseButton.addEventListener('click', () => {
+                this.increaseTime(index);
+            });
+        }
+
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                this.deleteClock(index);
+            });
+        }
+    }
+
+    public addClock(model: ClockModel): void {
+        this.models.push(model);
+        const newClockElement = this.createClockElement(this.models.length - 1);
+        this.container.appendChild(newClockElement);
+        this.updateClocks();
+        this.setupClockEventListeners(this.models.length - 1);
+    }
+
+    deleteClock(index: number): void {
+        this.models.splice(index, 1);
+        this.renderClocks(); // Re-render all clocks
+    }
+
+    public increaseTime(index: number): void {
+        if (this.models[index].editable === 'hours') {
+            this.models[index].increaseHours();
+        } else if (this.models[index].editable === 'minutes') {
+            this.models[index].increaseMinutes();
+        }
+        this.updateClocks();
     }
 
     updateClocks(): void {
@@ -109,21 +169,5 @@ export class ClockView {
                 minutesDisplay.classList.add('blinking');
             }
         }
-    }
-
-    public addClock(model: ClockModel): void {
-        this.models.push(model);
-        const newClockElement = this.createClockElement(this.models.length - 1);
-        this.container.appendChild(newClockElement);
-        this.updateClocks();
-    }
-
-    public increaseTime(index: number): void {
-        if (this.models[index].editable === 'hours') {
-            this.models[index].increaseHours();
-        } else if (this.models[index].editable === 'minutes') {
-            this.models[index].increaseMinutes();
-        }
-        this.updateClocks();
     }
 }
