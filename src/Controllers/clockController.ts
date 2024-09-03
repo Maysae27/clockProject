@@ -1,6 +1,6 @@
-import {ClockModel} from "../Models/clockModel";
-import {ClockView} from "../Views/clockView";
-import '../index.css'
+import { ClockModel } from "../Models/clockModel";
+import { ClockView } from "../Views/clockView";
+import '../index.css';
 
 export class ClockController {
     private models: ClockModel[];
@@ -9,53 +9,63 @@ export class ClockController {
     constructor(models: ClockModel[], view: ClockView) {
         this.models = models;
         this.view = view;
-        this.setupEventListeners(); //Global listeners
-
-
-        this.models.forEach((_, index) => {
-            this.setupClockEventListeners(index);
-        });
+        this.setupGlobalEventListeners();
+        this.models.forEach((_, index) => this.setupClock(index));
     }
 
-    private setupEventListeners(): void {
-        const addButton = document.getElementById('add-button') as HTMLButtonElement;
-
-        // Remove all existing event listeners before adding a new one
-        const newButton = addButton.cloneNode(true) as HTMLButtonElement;
-        addButton.parentNode?.replaceChild(newButton, addButton);
-
-        newButton.onclick = () => {
-            console.log("Add button clicked!");
-            this.addClock();
-        };
-
-
+    /**Global event listeners taht aren't tide to an instance of a clock*/
+    private setupGlobalEventListeners(): void {
+        this.setupAddButtonListener();
     }
 
-
-    private addClock(): void {
-        console.log("addClock method called.");
-        const defaultTimezoneOffset = 0; // Default to GMT
-        const newModel = new ClockModel(defaultTimezoneOffset);
-        this.view.addClock(newModel);
-        this.setupClockEventListeners(this.models.length - 1);
-        this.view.updateClocks()
-    }
-
-
-    private setupClockEventListeners(index: number): void {
+    /**Setup related to an instance of a clock: time zone && all buttons listners**/
+    private setupClock(index: number): void {
         this.setupTimezoneSelect(index);
-        this.setupLightButton(index);
-        this.setupModeButton(index);
-        this.setupIncreaseButton(index);
-        this.setupDeleteButton(index);
-        this.setupFormatButton(index);
-        this.setupResetButton(index);
+        this.setupButtonListeners(index);
     }
 
+    /**Event listner setup for add button that allows adding a new instance of a clock*/
+    private setupAddButtonListener(): void {
+        const addButton = document.getElementById('add-button') as HTMLButtonElement;
+        if (addButton) {
+            addButton.onclick = () => {
+                this.addClock();
+            };
+        }
+    }
+
+    /**Adding a new clock */
+    private addClock(): void {
+        const defaultTimezoneOffset = 0; // Default
+        const newModel = new ClockModel(defaultTimezoneOffset);
+        this.models.push(newModel);
+        this.view.addClock(newModel);
+        this.setupClock(this.models.length - 1);
+        this.view.updateClocks();
+    }
+
+
+    /**Grouping all buttons listeners**/
+    private setupButtonListeners(index: number): void {
+        this.setupButtonListener(`light-button-${index}`, () => this.toggleLight(index));
+        this.setupButtonListener(`mode-button-${index}`, () => this.cycleEditable(index));
+        this.setupButtonListener(`increase-button-${index}`, () => this.increaseTime(index));
+        this.setupButtonListener(`delete-button-${index}`, () => this.deleteClock(index));
+        this.setupButtonListener(`format-button-${index}`, () => this.toggleFormat(index));
+        this.setupButtonListener(`reset-button-${index}`, () => this.resetTime(index));
+    }
+
+    /**Setting up a button listener **/
+    private setupButtonListener(buttonId: string, handler: () => void): void {
+        const button = document.getElementById(buttonId) as HTMLButtonElement;
+        if (button) {
+            button.onclick = handler;
+        }
+    }
+
+    /**Time zone setup using an offset**/
     private setupTimezoneSelect(index: number): void {
         const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
-
         if (timezoneSelect) {
             timezoneSelect.onchange = (event: Event) => {
                 const selectElement = event.target as HTMLSelectElement;
@@ -66,70 +76,32 @@ export class ClockController {
         }
     }
 
-    private setupLightButton(index: number): void {
-        const lightButton = document.getElementById(`light-button-${index}`) as HTMLButtonElement;
-
-        if (lightButton) {
-            lightButton.onclick = () => {
-                this.models[index].toggleLight();
-                this.view.updateClocks();
-            };
-        }
+    private toggleLight(index: number): void {
+        this.models[index].toggleLight();
+        this.view.updateClocks();
     }
 
-    private setupModeButton(index: number): void {
-        const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
-
-        if (modeButton) {
-            modeButton.addEventListener('click', () => {
-                this.models[index].cycleEditable();
-                this.view.updateClocks();
-            });
-        }
+    /**Triggering the editing cycle when button: mode is pressed (3 phases) **/
+    private cycleEditable(index: number): void {
+        this.models[index].cycleEditable();
+        this.view.updateClocks();
     }
 
-    private setupIncreaseButton(index: number): void {
-        const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
-
-        if (increaseButton) {
-            increaseButton.addEventListener('click', () => {
-                this.view.increaseTime(index);
-            });
-        }
+    private increaseTime(index: number): void {
+        this.view.increaseTime(index);
     }
 
-    private setupDeleteButton(index: number): void {
-        const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
-
-        if (deleteButton) {
-            deleteButton.addEventListener('click', () => {
-                this.view.deleteClock(index);
-            });
-        }
+    private deleteClock(index: number): void {
+        this.view.deleteClock(index);
     }
 
-    private setupFormatButton(index: number): void {
-        const formatButton = document.getElementById(`format-button-${index}`) as HTMLButtonElement;
-
-        if (formatButton) {
-            formatButton.addEventListener('click', () => {
-                console.log(`Format button clicked for clock index: ${index}`);
-                this.models[index].toggleFormat();
-                this.view.updateClocks();
-            });
-        }
+    private toggleFormat(index: number): void {
+        this.models[index].toggleFormat();
+        this.view.updateClocks();
     }
 
-    private setupResetButton(index: number): void {
-        const resetButton = document.getElementById(`reset-button-${index}`) as HTMLButtonElement;
-
-        if (resetButton) {
-            resetButton.addEventListener('click', () => {
-                this.models[index].resetTime();
-                this.view.updateClocks();
-            });
-        }
+    private resetTime(index: number): void {
+        this.models[index].resetTime();
+        this.view.updateClocks();
     }
-
-
 }
