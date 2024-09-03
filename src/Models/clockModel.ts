@@ -92,7 +92,10 @@ export class ClockModel {
         }
     }
 
-
+    resetTime(): void {
+        const currentTime = new Date();
+        this.updateTime(currentTime);
+    }
     increaseHours(): void {
         this.hours = (this.hours + 1) % 24;
     }

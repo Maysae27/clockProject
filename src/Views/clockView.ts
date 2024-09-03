@@ -81,6 +81,9 @@ export class ClockView {
         const formatButton = clockElement.querySelector('.format-button') as HTMLButtonElement;
         formatButton.id = `format-button-${index}`;
 
+        const resetButton = clockElement.querySelector('.reset-button') as HTMLButtonElement;
+        resetButton.id = `reset-button-${index}`;
+
 
         return clockElement;
     }

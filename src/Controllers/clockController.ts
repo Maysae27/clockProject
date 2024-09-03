@@ -61,6 +61,8 @@ export class ClockController {
         const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
         const formatButton = document.getElementById(`format-button-${index}`) as HTMLButtonElement;
         const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
+        const resetButton = document.getElementById(`reset-button-${index}`) as HTMLButtonElement;
+
 
         if (timezoneSelect) {
             timezoneSelect.onchange = (event: Event) => {
@@ -105,7 +107,12 @@ export class ClockController {
             });
         }
 
-
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                this.models[index].resetTime();
+                this.view.updateClocks();
+            });
+        }
     }
 
 
