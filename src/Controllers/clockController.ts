@@ -1,5 +1,6 @@
 import { ClockModel } from "../Models/clockModel";
 import { ClockView } from "../Views/clockView";
+import { EventHandler } from '../Utilities/EventHandler';
 import '../index.css';
 
 export class ClockController {
@@ -15,7 +16,7 @@ export class ClockController {
 
     /**Global event listeners taht aren't tide to an instance of a clock*/
     private setupGlobalEventListeners(): void {
-        this.setupAddButtonListener();
+        EventHandler.addClickListener('add-button', () => this.addClock());
     }
 
     /** Setup all clocks */
@@ -49,12 +50,12 @@ export class ClockController {
 
     /**Grouping all buttons listeners**/
     private setupButtonListeners(index: number): void {
-        this.setupButtonListener(`light-button-${index}`, () => this.toggleLight(index));
-        this.setupButtonListener(`mode-button-${index}`, () => this.cycleEditable(index));
-        this.setupButtonListener(`increase-button-${index}`, () => this.increaseTime(index));
-        this.setupButtonListener(`delete-button-${index}`, () => this.deleteClock(index));
-        this.setupButtonListener(`format-button-${index}`, () => this.toggleFormat(index));
-        this.setupButtonListener(`reset-button-${index}`, () => this.resetTime(index));
+        EventHandler.addClickListener(`light-button-${index}`, () => this.toggleLight(index));
+        EventHandler.addClickListener(`mode-button-${index}`, () => this.cycleEditable(index));
+        EventHandler.addClickListener(`increase-button-${index}`, () => this.increaseTime(index));
+        EventHandler.addClickListener(`delete-button-${index}`, () => this.deleteClock(index));
+        EventHandler.addClickListener(`format-button-${index}`, () => this.toggleFormat(index));
+        EventHandler.addClickListener(`reset-button-${index}`, () => this.resetTime(index));
     }
 
     /**Setting up a button listener **/
@@ -67,17 +68,25 @@ export class ClockController {
 
     /**Time zone setup using an offset**/
     private setupTimezoneSelect(index: number): void {
-        const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
+        // Construct the ID for the timezone select element
+        const timezoneSelectId = `timezone-select-${index}`;
+
+        // Get the timezone select element
+        const timezoneSelect = document.getElementById(timezoneSelectId) as HTMLSelectElement;
         if (timezoneSelect) {
-            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions(); // Populate options
-            timezoneSelect.onchange = (event: Event) => {
+            // Populate the select options
+            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+
+            // Use EventHandler to add a change listener
+            EventHandler.addChangeListener(timezoneSelectId, (event: Event) => {
                 const selectElement = event.target as HTMLSelectElement;
                 const offset = parseInt(selectElement.value, 10);
                 this.models[index].setTimezoneOffset(offset);
                 this.view.updateClocks();
-            };
+            });
         }
     }
+
 
     private toggleLight(index: number): void {
         this.models[index].toggleLight();
@@ -95,7 +104,6 @@ export class ClockController {
     }
 
     private deleteClock(index: number): void {
-        console.log('delete called from controller for clock: ', index);
         this.view.deleteClock(index);
         this.setupAllClocks(); // Re-setup event listeners for remaining clocks
     }

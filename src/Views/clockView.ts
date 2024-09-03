@@ -99,8 +99,6 @@ export class ClockView {
         });
     }
 
-
-
     public addClock(): void {
         const newModel = new ClockModel(0);
         this.models.push(newModel);
@@ -115,6 +113,7 @@ export class ClockView {
         this.renderClocks();
     }
 
+    /** Increases the time of a specific clock by index */
     public increaseTime(index: number): void {
         const model = this.models[index];
         if (model.editable === 'hours') {
@@ -125,6 +124,7 @@ export class ClockView {
         this.updateClocks();
     }
 
+    /** Global: Updates the display for all clocks */
     public updateClocks(): void {
         this.models.forEach((model, index) => {
             this.updateClockDisplay(index, model);
@@ -132,7 +132,7 @@ export class ClockView {
         });
         this.populateTimezoneSelects();
     }
-
+    /** Updates the display for a specific clock , takes index of clock as an argument*/
     private updateClockDisplay(index: number, model: ClockModel): void {
         const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
         const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
