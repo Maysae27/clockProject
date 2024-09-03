@@ -18,6 +18,11 @@ export class ClockController {
         this.setupAddButtonListener();
     }
 
+    /** Setup all clocks */
+    private setupAllClocks(): void {
+        this.models.forEach((_, index) => this.setupClock(index));
+    }
+
     /**Setup related to an instance of a clock: time zone && all buttons listners**/
     private setupClock(index: number): void {
         this.setupTimezoneSelect(index);
@@ -36,10 +41,7 @@ export class ClockController {
 
     /**Adding a new clock */
     private addClock(): void {
-        const defaultTimezoneOffset = 0; // Default
-        const newModel = new ClockModel(defaultTimezoneOffset);
-        this.models.push(newModel);
-        this.view.addClock(newModel);
+        this.view.addClock();
         this.setupClock(this.models.length - 1);
         this.view.updateClocks();
     }
@@ -92,7 +94,9 @@ export class ClockController {
     }
 
     private deleteClock(index: number): void {
+        console.log('delete called from controller for clock: ', index);
         this.view.deleteClock(index);
+        this.setupAllClocks(); // Re-setup event listeners for remaining clocks
     }
 
     private toggleFormat(index: number): void {

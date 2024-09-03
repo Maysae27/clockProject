@@ -19,6 +19,7 @@ body {
     background-color: #F5B000;
 }
 
+/*The clock's rectangular container */
 #clock-container {
     display: flex;
     flex-wrap: wrap;
@@ -83,6 +84,7 @@ body {
     text-align: center;
 }
 
+/*Manages blinking*/
 .blinking {
     animation: blink 1s step-start infinite;
 }
@@ -93,6 +95,7 @@ body {
     }
 }
 
+/*Manage light: switch on/off */
 .light-on  {
     background: #FBE106;
     color: #000;
@@ -165,6 +168,7 @@ button {
     background-color: #096c39;
 }
 
+/*AM/PM -- 24H format button*/
 .format-button {
     position: absolute;
     top: 50%;
@@ -194,6 +198,7 @@ button {
     color: #FFF;
 }
 
+/*Drop down select to choose a time zone*/
 .timezone-select {
     font-size: 0.9em;
     background-color: #333;

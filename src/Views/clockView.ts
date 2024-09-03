@@ -88,16 +88,13 @@ export class ClockView {
         return clockElement;
     }
 
-
-
-
-    public addClock(model: ClockModel): void {
-        this.models.push(model);
+    public addClock(): void {
+        const defaultTimezoneOffset = 0; // Default
+        const newModel = new ClockModel(defaultTimezoneOffset);
+        this.models.push(newModel);
         const newClockElement = this.createClockElement(this.models.length - 1);
         this.container.appendChild(newClockElement);
     }
-
-
 
 
     deleteClock(index: number): void {
@@ -115,7 +112,9 @@ export class ClockView {
     }
 
     public updateClocks(): void {
+        console.log('updating... Clocks coco')
         this.models.forEach((model, index) => {
+            console.log("updating clock: ", index)
             const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
             const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
             const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
