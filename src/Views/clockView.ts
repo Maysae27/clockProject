@@ -1,4 +1,6 @@
-import { ClockModel } from "../Models/clockModel";
+import {ClockModel} from "../Models/clockModel";
+import { TimeZoneOffset, getTimeZoneLabel } from '../enums/TimeZoneOffset'
+import { ClockElementId, getClockElementIds } from '../enums/ClockElementId'
 
 export class ClockView {
     private models: ClockModel[];
@@ -14,153 +16,152 @@ export class ClockView {
             throw new Error("Clock template not found!");
         }
 
-        this.renderClocks();
-        this.startClockUpdates(); // Start the clock updates
-        this.setupTimezoneSelect(); // Set up timezone selection
+        this.initialize();
     }
 
+    /** Initializes the view by rendering clocks and starting clock updates */
+    private initialize(): void {
+        this.renderClocks();
+        this.startClockUpdates();
+        this.setupTimezoneSelect();
+    }
+
+    private populateTimezoneSelects(): void {
+        this.models.forEach((model, index) => {
+            const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
+            if (timezoneSelect) {
+                timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+                timezoneSelect.value = model.timezoneOffset.toString();
+            }
+        });
+    }
+
+    /**To dynamically load the select options for the TimeZone*/
+    static generateTimeZoneOptions(): string {
+        return Object.values(TimeZoneOffset)
+            .filter(value => typeof value === 'number')
+            .map(offset => {
+                return `<option value="${offset}">${getTimeZoneLabel(offset as TimeZoneOffset)}</option>`;
+            }).join('');
+    }
+
+    /** Sets up the time zone dropdowns for each clock */
     private setupTimezoneSelect(): void {
+        const timezoneSelects = document.querySelectorAll('.timezone-select');
+
+        timezoneSelects.forEach(select => {
+            (select as HTMLSelectElement).innerHTML = ClockView.generateTimeZoneOptions();
+        });
+
         const timezoneSelect = document.getElementById('timezone-select') as HTMLSelectElement;
         if (timezoneSelect) {
-            timezoneSelect.onchange = () => {
+            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+            timezoneSelect.addEventListener('change', () => {
                 const offset = parseInt(timezoneSelect.value, 10);
                 this.models.forEach(model => model.setTimezoneOffset(offset));
-                this.updateClocks(); // Refresh the view with the new timezone
-            };
+                this.updateClocks();
+            });
         }
     }
 
+    /** Starts the interval to update clocks every second */
     private startClockUpdates(): void {
         setInterval(() => {
-            this.models.forEach(model => model.advanceTime()); // Update the time in each model
-            this.updateClocks(); // Refresh the view
-        }, 1000); // Update every second
+            this.models.forEach(model => model.advanceTime());
+            this.updateClocks();
+        }, 1000);
     }
 
     private renderClocks(): void {
-        this.container.innerHTML = ''; // Clear existing clocks
+        this.container.innerHTML = '';
         this.models.forEach((_, index) => {
-            const clockElement = this.createClockElement(index);
-            this.container.appendChild(clockElement);
+            this.container.appendChild(this.createClockElement(index));
         });
         this.updateClocks();
     }
 
-
+    /** Creating a clock  using teh template */
     private createClockElement(index: number): HTMLElement {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
-
-        // Add unique IDs to elements to avoid conflicts
-        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
-        timeDisplay.id = `time-display-${index}`;
-
-        const timezoneSelect = clockElement.querySelector('.timezone-select') as HTMLSelectElement;
-        timezoneSelect.id = `timezone-select-${index}`;
-
-        const hoursDisplay = clockElement.querySelector('.hours-display') as HTMLSpanElement;
-        hoursDisplay.id = `hours-display-${index}`;
-
-        const minutesDisplay = clockElement.querySelector('.minutes-display') as HTMLSpanElement;
-        minutesDisplay.id = `minutes-display-${index}`;
-
-        const secondsDisplay = clockElement.querySelector('.seconds-display') as HTMLSpanElement;
-        secondsDisplay.id = `seconds-display-${index}`;
-
-        const modeButton = clockElement.querySelector('.mode-button') as HTMLButtonElement;
-        modeButton.id = `mode-button-${index}`;
-
-        const increaseButton = clockElement.querySelector('.increase-button') as HTMLButtonElement;
-        increaseButton.id = `increase-button-${index}`;
-
-        const lightButton = clockElement.querySelector('.light-button') as HTMLButtonElement;
-        lightButton.id = `light-button-${index}`;
-
-        const deleteButton = clockElement.querySelector('.delete-button') as HTMLButtonElement;
-        deleteButton.id = `delete-button-${index}`;
-
-        const formatButton = clockElement.querySelector('.format-button') as HTMLButtonElement;
-        formatButton.id = `format-button-${index}`;
-
-        const resetButton = clockElement.querySelector('.reset-button') as HTMLButtonElement;
-        resetButton.id = `reset-button-${index}`;
-
-
+        this.setElementIds(clockElement, index);
         return clockElement;
     }
 
-    public addClock(): void {
-        const defaultTimezoneOffset = 0; // Default
-        const newModel = new ClockModel(defaultTimezoneOffset);
-        this.models.push(newModel);
-        const newClockElement = this.createClockElement(this.models.length - 1);
-        this.container.appendChild(newClockElement);
+    /** Sets unique IDs for elements in a clock based on its index */
+    private setElementIds(clockElement: HTMLElement, index: number): void {
+        const elementIds = getClockElementIds();
+
+        elementIds.forEach(id => {
+            const element = clockElement.querySelector(`.${id}`) as HTMLElement;
+            if (element) {
+                element.id = `${id}-${index}`;
+            }
+        });
     }
 
 
-    deleteClock(index: number): void {
+
+    public addClock(): void {
+        const newModel = new ClockModel(0);
+        this.models.push(newModel);
+        this.container.appendChild(this.createClockElement(this.models.length - 1));
+        // Populate the new select element with time zone options
+        this.populateTimezoneSelects();
+    }
+
+
+    public deleteClock(index: number): void {
         this.models.splice(index, 1);
-        this.renderClocks(); // Re-render all clocks
+        this.renderClocks();
     }
 
     public increaseTime(index: number): void {
-        if (this.models[index].editable === 'hours') {
-            this.models[index].increaseHours();
-        } else if (this.models[index].editable === 'minutes') {
-            this.models[index].increaseMinutes();
+        const model = this.models[index];
+        if (model.editable === 'hours') {
+            model.increaseHours();
+        } else if (model.editable === 'minutes') {
+            model.increaseMinutes();
         }
         this.updateClocks();
     }
 
     public updateClocks(): void {
-        console.log('updating... Clocks coco')
         this.models.forEach((model, index) => {
-            console.log("updating clock: ", index)
-            const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
-            const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
-            const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
-
-            if (hoursDisplay && minutesDisplay && secondsDisplay) {
-                hoursDisplay.textContent = model.getFormattedHours();
-                minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
-                secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
-
-                const amPmText = model.getAmPm();
-                if (amPmText) {
-                    secondsDisplay.textContent += ` ${amPmText}`;
-                }
-            }
-
-            const timeDisplay = document.getElementById(`time-display-${index}`) as HTMLDivElement;
-            if (timeDisplay) {
-                timeDisplay.style.backgroundColor = model.isLightOn ? '#FBE106' : '';
-                timeDisplay.style.color = model.isLightOn ? 'black' : '';
-            }
-
+            this.updateClockDisplay(index, model);
             this.handleBlinking(model, index);
         });
+        this.populateTimezoneSelects();
     }
 
+    private updateClockDisplay(index: number, model: ClockModel): void {
+        const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
+        const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
+        const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
+        const timeDisplay = document.getElementById(`time-display-${index}`) as HTMLDivElement;
 
+        if (hoursDisplay && minutesDisplay && secondsDisplay) {
+            hoursDisplay.textContent = model.getFormattedHours();
+            minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
+            secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
 
+            const amPmText = model.getAmPm();
+            if (amPmText) {
+                secondsDisplay.textContent += ` ${amPmText}`;
+            }
+        }
+
+        if (timeDisplay) {
+            timeDisplay.style.backgroundColor = model.isLightOn ? '#FBE106' : '';
+            timeDisplay.style.color = model.isLightOn ? 'black' : '';
+        }
+    }
+
+    /**Handling blinking when either hoursor minutes go in editable mode*/
     private handleBlinking(model: ClockModel, index: number): void {
         const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
         const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
 
-        if (hoursDisplay) {
-            hoursDisplay.classList.remove('blinking');
-        }
-        if (minutesDisplay) {
-            minutesDisplay.classList.remove('blinking');
-        }
-
-        if (model.editable === 'hours') {
-            if (hoursDisplay) {
-                hoursDisplay.classList.add('blinking');
-            }
-        } else if (model.editable === 'minutes') {
-            if (minutesDisplay) {
-                minutesDisplay.classList.add('blinking');
-            }
-        }
+        hoursDisplay?.classList.toggle('blinking', model.editable === 'hours');
+        minutesDisplay?.classList.toggle('blinking', model.editable === 'minutes');
     }
 }

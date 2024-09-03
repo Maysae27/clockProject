@@ -76,10 +76,9 @@ export class ClockModel {
     }
 
     advanceTime(): void {
-        //only seconds keep advancing, the rest is being edited with blink effect
+        //only seconds keep advancing while the rest is being edited with blink effect
         this.seconds += 1;
         if (!this.isEditing) {
-
             if (this.seconds >= 60) {
                 this.seconds = 0;
                 this.minutes += 1;
@@ -96,6 +95,7 @@ export class ClockModel {
         const currentTime = new Date();
         this.updateTime(currentTime);
     }
+
     increaseHours(): void {
         this.hours = (this.hours + 1) % 24;
     }

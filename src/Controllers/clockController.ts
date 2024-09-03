@@ -69,6 +69,7 @@ export class ClockController {
     private setupTimezoneSelect(index: number): void {
         const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
         if (timezoneSelect) {
+            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions(); // Populate options
             timezoneSelect.onchange = (event: Event) => {
                 const selectElement = event.target as HTMLSelectElement;
                 const offset = parseInt(selectElement.value, 10);
