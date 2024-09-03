@@ -111,7 +111,7 @@ export class ClockView {
         this.updateClocks();
     }
 
-    updateClocks(): void {
+    public updateClocks(): void {
         this.models.forEach((model, index) => {
             const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
             const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
@@ -137,6 +137,7 @@ export class ClockView {
             this.handleBlinking(model, index);
         });
     }
+
 
 
     private handleBlinking(model: ClockModel, index: number): void {

@@ -12,18 +12,19 @@ export class ClockModel {
 
 
     constructor(timezoneOffset: number = 0) {
-        const currentTime = new Date();
         this.timezoneOffset = timezoneOffset;
-        this.hours = currentTime.getUTCHours(); // Use UTC hours initially
+        const currentTime = new Date();
+        currentTime.setUTCMinutes(currentTime.getUTCMinutes() + timezoneOffset * 60);
+        this.hours = currentTime.getUTCHours();
         this.minutes = currentTime.getUTCMinutes();
         this.seconds = currentTime.getUTCSeconds();
-        this.updateTime(currentTime);
         this.editable = 'none';
         this.isLightOn = false;
         this.editCycleCount = 0;
         this.isEditing = false;
         this.is24HourFormat = true;
     }
+
 
     private updateTime(date: Date): void {
         const utcHours = date.getUTCHours();
@@ -37,20 +38,23 @@ export class ClockModel {
 
     setTimezoneOffset(offset: number): void {
         this.timezoneOffset = offset;
-        const currentTime = new Date();
-        this.updateTime(currentTime);
+        const now = new Date();
+        now.setUTCMinutes(now.getUTCMinutes() + offset * 60);
+        this.hours = now.getUTCHours();
+        this.minutes = now.getUTCMinutes();
+        this.seconds = now.getUTCSeconds();
     }
 
-    advanceTime(): void {
-        if (!this.isEditing) {
-            const now = new Date();
-            const utcTime = new Date(now.getTime() + this.timezoneOffset * 60 * 60 * 1000);
-            this.hours = utcTime.getUTCHours();
-            this.minutes = utcTime.getUTCMinutes();
-            this.seconds = utcTime.getUTCSeconds();
-        }
-    }
 
+    finalizeEdit(): void {
+        this.isEditing = false;
+        this.editable = 'none';
+
+        const now = new Date();
+        now.setUTCHours(this.hours - this.timezoneOffset);
+        now.setUTCMinutes(this.minutes);
+        now.setUTCSeconds(this.seconds);
+    }
 
 
     cycleEditable(): void {
@@ -58,17 +62,36 @@ export class ClockModel {
 
         switch (this.editCycleCount) {
             case 0:
-                this.editable = 'none';
+                this.finalizeEdit(); // Stop editing when 'none' is selected
                 break;
             case 1:
                 this.editable = 'hours';
+                this.isEditing = true;
                 break;
             case 2:
                 this.editable = 'minutes';
+                this.isEditing = true;
                 break;
         }
-        console.log(`Editable set to: ${this.editable}`);
     }
+
+    advanceTime(): void {
+        //only seconds keep advancing, the rest is being edited with blink effect
+        this.seconds += 1;
+        if (!this.isEditing) {
+
+            if (this.seconds >= 60) {
+                this.seconds = 0;
+                this.minutes += 1;
+            }
+
+            if (this.minutes >= 60) {
+                this.minutes = 0;
+                this.hours = (this.hours + 1) % 24;
+            }
+        }
+    }
+
 
     increaseHours(): void {
         this.hours = (this.hours + 1) % 24;
@@ -91,6 +114,7 @@ export class ClockModel {
     toggleLight(): void {
         this.isLightOn = !this.isLightOn;
     }
+
     toggleFormat(): void {
         this.is24HourFormat = !this.is24HourFormat;
         console.log(`Time format toggled. Now 24-hour format is: ${this.is24HourFormat}`);
