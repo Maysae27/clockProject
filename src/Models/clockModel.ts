@@ -1,4 +1,5 @@
 export class ClockModel {
+
     hours: number;
     minutes: number;
     seconds: number;
@@ -7,18 +8,50 @@ export class ClockModel {
     editCycleCount: number;
     isEditing: boolean;
     is24HourFormat: boolean;
+    timezoneOffset: number;
 
-    constructor() {
+
+    constructor(timezoneOffset: number = 0) {
         const currentTime = new Date();
-        this.hours = currentTime.getHours();
-        this.minutes = currentTime.getMinutes();
-        this.seconds = currentTime.getSeconds();
+        this.timezoneOffset = timezoneOffset;
+        this.hours = currentTime.getUTCHours(); // Use UTC hours initially
+        this.minutes = currentTime.getUTCMinutes();
+        this.seconds = currentTime.getUTCSeconds();
+        this.updateTime(currentTime);
         this.editable = 'none';
         this.isLightOn = false;
         this.editCycleCount = 0;
         this.isEditing = false;
         this.is24HourFormat = true;
     }
+
+    private updateTime(date: Date): void {
+        const utcHours = date.getUTCHours();
+        const utcMinutes = date.getUTCMinutes();
+        const utcSeconds = date.getUTCSeconds();
+
+        this.hours = (utcHours + this.timezoneOffset + 24) % 24;
+        this.minutes = utcMinutes;
+        this.seconds = utcSeconds;
+    }
+
+    setTimezoneOffset(offset: number): void {
+        this.timezoneOffset = offset;
+        const currentTime = new Date();
+        this.updateTime(currentTime);
+    }
+
+    advanceTime(): void {
+        if (!this.isEditing) {
+            const now = new Date();
+            const utcTime = new Date(now.getTime() + this.timezoneOffset * 60 * 60 * 1000);
+            this.hours = utcTime.getUTCHours();
+            this.minutes = utcTime.getUTCMinutes();
+            this.seconds = utcTime.getUTCSeconds();
+        }
+    }
+
+
 
     cycleEditable(): void {
         this.editCycleCount = (this.editCycleCount + 1) % 3;
@@ -64,12 +97,6 @@ export class ClockModel {
     }
 
 
-    advanceTime(): void {
-        if (!this.isEditing) {
-            const currentTime = new Date();
-            this.seconds = currentTime.getSeconds();
-        }
-    }
     getAmPm(): string {
         if (this.is24HourFormat) {
             return ''; // Empty string for 24-hour format

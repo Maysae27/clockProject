@@ -1,12 +1,12 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0; /* Optional: Background color for better visibility */
+    background-color: #f0f0f0;
 }
 
 #add-button {
     display: block;
-    margin: 20px auto; /* Center the button horizontally with margin at the top */
+    margin: 20px auto;
     padding: 10px 20px;
     font-size: 16px;
     background-color: #F5C300;
@@ -16,30 +16,30 @@ body {
 }
 
 #add-button:hover {
-    background-color: #F5B000; /* Slightly darker yellow on hover */
+    background-color: #F5B000;
 }
 
 #clock-container {
     display: flex;
-    flex-wrap: wrap; /* Wrap clocks to next line */
-    gap: 20px; /* Space between clocks */
-    justify-content: center; /* Center clocks horizontally */
-    margin: 50px 300px; /* Vertical margin of 50px, horizontal margin of 300px */
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin: 50px 300px;
     padding: 50px;
 }
 
 .clock-container {
     position: relative;
-    border: 5px solid #333; /* Border around the clock */
-    border-radius: 10px; /* Rounded corners for the border */
-    padding: 10px; /* Padding inside the border */
+    border: 5px solid #333;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .clock {
-    width: 300px; /* Fixed width for each clock */
-    height: 300px; /* Fixed height for each clock */
+    width: 300px;
+    height: 300px;
     border: 10px solid #333;
-    border-radius: 50%; /* Round clock */
+    border-radius: 50%;
     background-color: #6e36ae;
     display: flex;
     align-items: center;
@@ -49,10 +49,10 @@ body {
 
 .delete-button {
     position: absolute;
-    top: -15px; /* Position above the clock border */
-    right: -15px; /* Position to the right of the clock border */
-    background-color: #F00; /* Red background for delete button */
-    color: #FFF; /* White text */
+    top: -15px;
+    right: -15px;
+    background-color: #F00;
+    color: #FFF;
     border: none;
     border-radius: 50%;
     width: 30px;
@@ -66,7 +66,7 @@ body {
 }
 
 .delete-button:hover {
-    background-color: #C00; /* Darker red on hover */
+    background-color: #C00;
 }
 
 .time-display {
@@ -94,13 +94,13 @@ body {
 }
 
 .light-on  {
-    background: #FBE106; /* Yellow background when light is on */
-    color: #000; /* Black text when light is on */
+    background: #FBE106;
+    color: #000;
 }
 
 .light-off {
-    background: #000; /* Black background when light is off */
-    color: #0f0; /* Green text when light is off */
+    background: #000;
+    color: #0f0;
 }
 
 .buttons-container {
@@ -122,7 +122,7 @@ button {
 }
 
 .button:hover {
-    background-color: #F5B000; /* Slightly darker yellow on hover */
+    background-color: #F5B000;
 }
 
 .mode-button {
@@ -148,9 +148,9 @@ button {
 
 .reset-button {
     position: absolute;
-    top: 15%; /* Adjusted for positioning within the circle */
-    left: 15%; /* Adjusted for positioning within the circle */
-    transform: translate(-50%, -50%) rotate(-45deg); /* Diagonal positioning */
+    top: 15%;
+    left: 15%;
+    transform: translate(-50%, -50%) rotate(-45deg);
     background-color: #228B22;
     color: #f0f0f0;
     border: none;
@@ -162,16 +162,16 @@ button {
 }
 
 .reset-button {
-    background-color: #096c39; /* Slightly darker yellow on hover */
+    background-color: #096c39;
 }
 
 .format-button {
     position: absolute;
-    top: 50%; /* Adjust to place it at the top of the circle */
-    right: 15%; /* Adjust to position it horizontally towards the right side */
-    transform: translate(50%, -50%); /* Center the button within its position */
-    background-color: #228B22; /* Accessible green color */
-    color: #FFF; /* White text color for contrast */
+    top: 50%;
+    right: 15%;
+    transform: translate(50%, -50%);
+    background-color: #228B22;
+    color: #FFF;
     border: none;
     padding: 10px;
     border-radius: 4px;
@@ -181,5 +181,33 @@ button {
 }
 
 .format-button:hover {
-    background-color: #1E7A1E; /* Slightly darker green on hover for contrast */
+    background-color: #1E7A1E;
 }
+
+.timezone-wrapper {
+    position: absolute;
+    top: 50px;
+    left: 45%;
+    transform: translate(-50%, 0);
+    z-index: 80;
+    text-align: center;
+    color: #FFF;
+}
+
+.timezone-select {
+    font-size: 0.9em;
+    background-color: #333;
+    color: #FFF;
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 5px;
+    width: 85px;
+}
+
+.timezone-text {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 5px; /* Space between text and select */
+}
+
+

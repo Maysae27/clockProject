@@ -16,6 +16,18 @@ export class ClockView {
 
         this.renderClocks();
         this.startClockUpdates(); // Start the clock updates
+        this.setupTimezoneSelect(); // Set up timezone selection
+    }
+
+    private setupTimezoneSelect(): void {
+        const timezoneSelect = document.getElementById('timezone-select') as HTMLSelectElement;
+        if (timezoneSelect) {
+            timezoneSelect.onchange = () => {
+                const offset = parseInt(timezoneSelect.value, 10);
+                this.models.forEach(model => model.setTimezoneOffset(offset));
+                this.updateClocks(); // Refresh the view with the new timezone
+            };
+        }
     }
 
     private startClockUpdates(): void {
@@ -34,12 +46,16 @@ export class ClockView {
         this.updateClocks();
     }
 
+
     private createClockElement(index: number): HTMLElement {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
 
-        // Add unique IDs to elements to avoid conflicts when querying them
+        // Add unique IDs to elements to avoid conflicts
         const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
         timeDisplay.id = `time-display-${index}`;
+
+        const timezoneSelect = clockElement.querySelector('.timezone-select') as HTMLSelectElement;
+        timezoneSelect.id = `timezone-select-${index}`;
 
         const hoursDisplay = clockElement.querySelector('.hours-display') as HTMLSpanElement;
         hoursDisplay.id = `hours-display-${index}`;
@@ -65,51 +81,21 @@ export class ClockView {
         const formatButton = clockElement.querySelector('.format-button') as HTMLButtonElement;
         formatButton.id = `format-button-${index}`;
 
-        this.setupClockEventListeners(index); // Ensure event listeners are set up for the new clock
 
         return clockElement;
     }
 
-    private setupClockEventListeners(index: number): void {
-        const lightButton = document.getElementById(`light-button-${index}`) as HTMLButtonElement;
-        const modeButton = document.getElementById(`mode-button-${index}`) as HTMLButtonElement;
-        const increaseButton = document.getElementById(`increase-button-${index}`) as HTMLButtonElement;
-        const deleteButton = document.getElementById(`delete-button-${index}`) as HTMLButtonElement;
 
-        if (lightButton) {
-            lightButton.addEventListener('click', () => {
-                this.models[index].toggleLight();
-                this.updateClocks();
-            });
-        }
 
-        if (modeButton) {
-            modeButton.addEventListener('click', () => {
-                this.models[index].cycleEditable();
-                this.updateClocks();
-            });
-        }
-
-        if (increaseButton) {
-            increaseButton.addEventListener('click', () => {
-                this.increaseTime(index);
-            });
-        }
-
-        if (deleteButton) {
-            deleteButton.addEventListener('click', () => {
-                this.deleteClock(index);
-            });
-        }
-    }
 
     public addClock(model: ClockModel): void {
         this.models.push(model);
         const newClockElement = this.createClockElement(this.models.length - 1);
         this.container.appendChild(newClockElement);
-        this.updateClocks();
-        this.setupClockEventListeners(this.models.length - 1);
     }
+
+
+
 
     deleteClock(index: number): void {
         this.models.splice(index, 1);
@@ -132,15 +118,11 @@ export class ClockView {
             const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
 
             if (hoursDisplay && minutesDisplay && secondsDisplay) {
-                console.log('update time display')
-                // Update time displays
                 hoursDisplay.textContent = model.getFormattedHours();
                 minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
                 secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
 
-                // Get the AM/PM text
                 const amPmText = model.getAmPm();
-                // Update or append the AM/PM display next to seconds
                 if (amPmText) {
                     secondsDisplay.textContent += ` ${amPmText}`;
                 }
@@ -148,18 +130,14 @@ export class ClockView {
 
             const timeDisplay = document.getElementById(`time-display-${index}`) as HTMLDivElement;
             if (timeDisplay) {
-                if (model.isLightOn) {
-                    timeDisplay.style.backgroundColor = '#FBE106';
-                    timeDisplay.style.color = 'black';
-                } else {
-                    timeDisplay.style.backgroundColor = '';
-                    timeDisplay.style.color = '';
-                }
+                timeDisplay.style.backgroundColor = model.isLightOn ? '#FBE106' : '';
+                timeDisplay.style.color = model.isLightOn ? 'black' : '';
             }
 
             this.handleBlinking(model, index);
         });
     }
+
 
     private handleBlinking(model: ClockModel, index: number): void {
         const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
