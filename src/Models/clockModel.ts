@@ -3,12 +3,12 @@ export class ClockModel {
     hours: number;
     minutes: number;
     seconds: number;
-    editable: 'hours' | 'minutes' | 'none';
-    isLightOn: boolean;
-    editCycleCount: number;
-    isEditing: boolean;
-    is24HourFormat: boolean;
-    timezoneOffset: number;
+    editable: 'hours' | 'minutes' | 'none'; // Indicates which part of the time is currently editable
+    isLightOn: boolean; // Indicates whether the clock's light is on
+    editCycleCount: number; // Tracks the cycle of the editable mode (hours, minutes, none)
+    isEditing: boolean; // Indicates if the clock is currently in editing mode
+    is24HourFormat: boolean; // Indicates whether the clock is in 24-hour or 12-hour format
+    timezoneOffset: number; // Timezone offset in hours from UTC
 
 
     constructor(timezoneOffset: number = 0) {
@@ -36,6 +36,7 @@ export class ClockModel {
         this.seconds = utcSeconds;
     }
 
+    /**Sets the timezone offset and updates the clock's time accordingly.*/
     setTimezoneOffset(offset: number): void {
         this.timezoneOffset = offset;
         const now = new Date();
@@ -45,7 +46,7 @@ export class ClockModel {
         this.seconds = now.getUTCSeconds();
     }
 
-
+    /**Finalizes the editing process and stops editing mode.*/
     finalizeEdit(): void {
         this.isEditing = false;
         this.editable = 'none';
@@ -56,6 +57,10 @@ export class ClockModel {
         now.setUTCSeconds(this.seconds);
     }
 
+
+    /**Cycles through the editable modes (hours -> minutes -> none).
+    * Each call advances to the next mode in the cycle.
+    * */
 
     cycleEditable(): void {
         this.editCycleCount = (this.editCycleCount + 1) % 3;
@@ -75,8 +80,11 @@ export class ClockModel {
         }
     }
 
+    /**
+     * Advances the time by one second. If not in editing mode, minutes and hours are updated accordingly.(while in blinking mode)
+     */
     advanceTime(): void {
-        //only seconds keep advancing while the rest is being edited with blink effect
+        //only seconds keep advancing while the rest is being edited with --blink effect--
         this.seconds += 1;
         if (!this.isEditing) {
             if (this.seconds >= 60) {
@@ -91,6 +99,9 @@ export class ClockModel {
         }
     }
 
+    /**
+     * Resets the time to the current time based on the system clock and timezone offset. --> For reset button
+     */
     resetTime(): void {
         const currentTime = new Date();
         this.updateTime(currentTime);
@@ -124,6 +135,7 @@ export class ClockModel {
     }
 
 
+    /**Utility function: Returns either "AM" or "PM" based on the current hour and format.**/
     getAmPm(): string {
         if (this.is24HourFormat) {
             return ''; // Empty string for 24-hour format
@@ -132,6 +144,7 @@ export class ClockModel {
         }
     }
 
+    /** Returns the formatted hour string based on the current hour and format.**/
     getFormattedHours(): string {
         if (this.is24HourFormat) {
             return this.hours.toString().padStart(2, '0');

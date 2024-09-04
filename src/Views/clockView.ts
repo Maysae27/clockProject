@@ -1,7 +1,6 @@
-import {ClockModel} from "../Models/clockModel";
+import { ClockModel } from "../Models/clockModel";
 import { TimeZoneOffset, getTimeZoneLabel } from '../enums/TimeZoneOffset'
-import { ClockElementId, getClockElementIds } from '../enums/ClockElementId'
-import { EventHandler } from '../Utilities/EventHandler';
+import { ClockElementId, getClockElementIds } from '../enums/ClockElementId';
 
 export class ClockView {
     private models: ClockModel[];
@@ -11,74 +10,31 @@ export class ClockView {
     constructor(models: ClockModel[], containerId: string) {
         this.models = models;
         this.container = document.getElementById(containerId) as HTMLElement;
-        this.template = document.getElementById('clock-template') as HTMLTemplateElement;
+        this.template = this.getTemplateElement('clock-template');
 
-        if (!this.template) {
-            throw new Error("Clock template not found!");
-        }
-
-        this.initialize();
-    }
-
-    /** Initializes the view by rendering clocks and starting clock updates */
-    private initialize(): void {
         this.renderClocks();
-        this.startClockUpdates();
-        this.setupTimezoneSelect();
     }
 
-    private populateTimezoneSelects(): void {
-        this.models.forEach((model, index) => {
-            const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
-            if (timezoneSelect) {
-                timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
-                timezoneSelect.value = model.timezoneOffset.toString();
-            }
-        });
+    /** Utility method to retrieve template element */
+    private getTemplateElement(templateId: string): HTMLTemplateElement {
+        const template = document.getElementById(templateId) as HTMLTemplateElement;
+        if (!template) {
+            throw new Error(`Template with ID ${templateId} not found!`);
+        }
+        return template;
     }
 
-    /**To dynamically load the select options for the TimeZone*/
-    static generateTimeZoneOptions(): string {
-        return Object.values(TimeZoneOffset)
-            .filter(value => typeof value === 'number')
-            .map(offset => {
-                return `<option value="${offset}">${getTimeZoneLabel(offset as TimeZoneOffset)}</option>`;
-            }).join('');
-    }
-
-    /** Sets up the time zone dropdowns for each clock */
-    private setupTimezoneSelect(): void {
-        const timezoneSelects = document.querySelectorAll('.timezone-select');
-
-        timezoneSelects.forEach(select => {
-            (select as HTMLSelectElement).innerHTML = ClockView.generateTimeZoneOptions();
-        });
-
-        EventHandler.addChangeListener('timezone-select', (event: Event) => {
-            const selectElement = event.target as HTMLSelectElement;
-            const offset = parseInt(selectElement.value, 10);
-            this.models.forEach(model => model.setTimezoneOffset(offset));
-            this.updateClocks();
-        });
-    }
-
-    /** Starts the interval to update clocks every second */
-    private startClockUpdates(): void {
-        setInterval(() => {
-            this.models.forEach(model => model.advanceTime());
-            this.updateClocks();
-        }, 1000);
-    }
-
+    /** Renders all clocks in the container */
     private renderClocks(): void {
         this.container.innerHTML = '';
         this.models.forEach((_, index) => {
-            this.container.appendChild(this.createClockElement(index));
+            const clockElement = this.createClockElement(index);
+            this.container.appendChild(clockElement);
         });
         this.updateClocks();
     }
 
-    /** Creating a clock  using teh template */
+    /** Creates a clock element using the template */
     private createClockElement(index: number): HTMLElement {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
         this.setElementIds(clockElement, index);
@@ -88,7 +44,6 @@ export class ClockView {
     /** Sets unique IDs for elements in a clock based on its index */
     private setElementIds(clockElement: HTMLElement, index: number): void {
         const elementIds = getClockElementIds();
-
         elementIds.forEach(id => {
             const element = clockElement.querySelector(`.${id}`) as HTMLElement;
             if (element) {
@@ -97,32 +52,22 @@ export class ClockView {
         });
     }
 
+    /** Public method to add a new clock */
     public addClock(): void {
         const newModel = new ClockModel(0);
         this.models.push(newModel);
-        this.container.appendChild(this.createClockElement(this.models.length - 1));
-        // Populate the new select element with time zone options
-        this.populateTimezoneSelects();
+        const clockElement = this.createClockElement(this.models.length - 1);
+        this.container.appendChild(clockElement);
+        this.populateTimezoneSelect(this.models.length - 1);
     }
 
-
+    /** Public method to delete a clock */
     public deleteClock(index: number): void {
         this.models.splice(index, 1);
         this.renderClocks();
     }
 
-    /** Increases the time of a specific clock by index */
-    public increaseTime(index: number): void {
-        const model = this.models[index];
-        if (model.editable === 'hours') {
-            model.increaseHours();
-        } else if (model.editable === 'minutes') {
-            model.increaseMinutes();
-        }
-        this.updateClocks();
-    }
-
-    /** Global: Updates the display for all clocks */
+    /** Public method to update all clocks */
     public updateClocks(): void {
         this.models.forEach((model, index) => {
             this.updateClockDisplay(index, model);
@@ -130,7 +75,8 @@ export class ClockView {
         });
         this.populateTimezoneSelects();
     }
-    /** Updates the display for a specific clock , takes index of clock as an argument*/
+
+    /** Updates the display for a specific clock */
     private updateClockDisplay(index: number, model: ClockModel): void {
         const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
         const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
@@ -154,12 +100,34 @@ export class ClockView {
         }
     }
 
-    /**Handling blinking when either hoursor minutes go in editable mode*/
+    /** To handle blinking effect for editable fields: hours or minutes */
     private handleBlinking(model: ClockModel, index: number): void {
         const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
         const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
 
         hoursDisplay?.classList.toggle('blinking', model.editable === 'hours');
         minutesDisplay?.classList.toggle('blinking', model.editable === 'minutes');
+    }
+
+    /** Populates the timezone select dropdown for all clocks */
+    private populateTimezoneSelects(): void {
+        this.models.forEach((_, index) => this.populateTimezoneSelect(index));
+    }
+
+    /** Populates the timezone select dropdown for a specific clock */
+    private populateTimezoneSelect(index: number): void {
+        const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
+        if (timezoneSelect) {
+            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+            timezoneSelect.value = this.models[index].timezoneOffset.toString();
+        }
+    }
+
+    /** Static method to generate timezone options */
+    static generateTimeZoneOptions(): string {
+        return Object.values(TimeZoneOffset)
+            .filter(value => typeof value === 'number')
+            .map(offset => `<option value="${offset}">${getTimeZoneLabel(offset as TimeZoneOffset)}</option>`)
+            .join('');
     }
 }

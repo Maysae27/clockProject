@@ -68,16 +68,13 @@ export class ClockController {
 
     /**Time zone setup using an offset**/
     private setupTimezoneSelect(index: number): void {
-        // Construct the ID for the timezone select element
         const timezoneSelectId = `timezone-select-${index}`;
 
-        // Get the timezone select element
         const timezoneSelect = document.getElementById(timezoneSelectId) as HTMLSelectElement;
         if (timezoneSelect) {
             // Populate the select options
             timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
 
-            // Use EventHandler to add a change listener
             EventHandler.addChangeListener(timezoneSelectId, (event: Event) => {
                 const selectElement = event.target as HTMLSelectElement;
                 const offset = parseInt(selectElement.value, 10);
@@ -99,8 +96,14 @@ export class ClockController {
         this.view.updateClocks();
     }
 
-    private increaseTime(index: number): void {
-        this.view.increaseTime(index);
+    public increaseTime(index: number): void {
+        const model = this.models[index];
+        if (model.editable === 'hours') {
+            model.increaseHours();
+        } else if (model.editable === 'minutes') {
+            model.increaseMinutes();
+        }
+        this.view.updateClocks();
     }
 
     private deleteClock(index: number): void {
