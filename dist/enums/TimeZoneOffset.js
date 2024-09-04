@@ -30,8 +30,6 @@ var TimeZoneOffset;
     TimeZoneOffset[TimeZoneOffset["GMT_PLUS_10"] = 10] = "GMT_PLUS_10";
     TimeZoneOffset[TimeZoneOffset["GMT_PLUS_11"] = 11] = "GMT_PLUS_11";
     TimeZoneOffset[TimeZoneOffset["GMT_PLUS_12"] = 12] = "GMT_PLUS_12";
-    TimeZoneOffset[TimeZoneOffset["GMT_PLUS_13"] = 13] = "GMT_PLUS_13";
-    TimeZoneOffset[TimeZoneOffset["GMT_PLUS_14"] = 14] = "GMT_PLUS_14";
 })(TimeZoneOffset || (exports.TimeZoneOffset = TimeZoneOffset = {}));
 // Function to get the label for the time zone offset
 function getTimeZoneLabel(offset) {

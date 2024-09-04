@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HomePageview = void 0;
-class HomePageview {
+exports.HomePageView = void 0;
+class HomePageView {
     constructor(containerId) {
         this.containerId = containerId;
     }
@@ -30,5 +30,5 @@ class HomePageview {
         });
     }
 }
-exports.HomePageview = HomePageview;
-//# sourceMappingURL=HomePageview.js.map
+exports.HomePageView = HomePageView;
+//# sourceMappingURL=HomePageView.js.map

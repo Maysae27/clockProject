@@ -1,7 +1,7 @@
-import { HomePageview} from "./Views/HomePageview";
+import { HomePageView} from "./Views/HomePageView";
 import { HomePageController} from "./Controllers/HomePageController";
 
 document.addEventListener('DOMContentLoaded', () => {
-    const homepageView = new HomePageview('main-content');
+    const homepageView = new HomePageView('main-content');
     new HomePageController(homepageView);
 });

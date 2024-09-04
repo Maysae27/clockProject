@@ -1,14 +1,14 @@
-import { HomePageview} from "../Views/HomePageview";
+import { HomePageView} from "../Views/HomePageView";
 import { ClockView} from "../Views/clockView";
 import { ClockModel} from "../Models/clockModel";
 import { ClockController} from "./clockController";
 
 export class HomePageController {
-    private homepageView: HomePageview;
+    private homepageView: HomePageView;
     private clockView: ClockView | undefined;
     private clockController: ClockController | undefined;
 
-    constructor(homepageView: HomePageview) {
+    constructor(homepageView: HomePageView) {
         this.homepageView = homepageView;
         this.initialize();
     }

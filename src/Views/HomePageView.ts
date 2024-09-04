@@ -1,4 +1,4 @@
-export class HomePageview {
+export class HomePageView {
     private containerId: string;
 
     constructor(containerId: string) {

@@ -8,53 +8,23 @@ class ClockView {
     constructor(models, containerId) {
         this.models = models;
         this.container = document.getElementById(containerId);
-        if (!this.container) {
-            throw new Error(`Container with ID ${containerId} not found!`);
-        }
-        // Fetch template now that the homepage is loaded
         this.template = this.getTemplateElement('clock-template');
-        this.renderClocks(); // Render clocks after initializing
+        this.renderClocks();
+        this.startClockUpdates();
     }
-    /** Loads the homepage template into the main content area */
-    loadHomepageTemplate() {
-        console.log('Fetching homepage template...');
-        return fetch('templates/homepage.html')
-            .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-            .then(html => {
-            const mainContent = document.getElementById('main-content');
-            if (mainContent) {
-                mainContent.innerHTML = html;
-                this.container = document.getElementById('clock-container');
-                if (!this.container) {
-                    throw new Error('Clock container not found!');
-                }
-                this.template = this.getTemplateElement('clock-template');
-                this.renderClocks();
-            }
-            else {
-                throw new Error('Main content container not found!');
-            }
-        })
-            .catch(error => {
-            console.error('Error in loadHomepageTemplate:', error);
-            throw error; // Rethrow to handle in the calling code
-        });
+    startClockUpdates() {
+        setInterval(() => {
+            this.models.forEach(model => model.advanceTime());
+            this.updateClocks();
+        }, 1000);
     }
     /** Utility method to retrieve template element */
     getTemplateElement(templateId) {
-        if (!this.template) {
-            const template = document.getElementById(templateId);
-            if (!template) {
-                throw new Error(`Template with ID ${templateId} not found!`);
-            }
-            return template;
+        const template = document.getElementById(templateId);
+        if (!template) {
+            throw new Error(`Template with ID ${templateId} not found!`);
         }
-        return this.template;
+        return template;
     }
     /** Renders all clocks in the container */
     renderClocks() {
