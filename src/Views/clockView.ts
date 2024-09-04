@@ -1,6 +1,7 @@
 import {ClockModel} from "../Models/clockModel";
 import { TimeZoneOffset, getTimeZoneLabel } from '../enums/TimeZoneOffset'
 import { ClockElementId, getClockElementIds } from '../enums/ClockElementId'
+import { EventHandler } from '../Utilities/EventHandler';
 
 export class ClockView {
     private models: ClockModel[];
@@ -53,15 +54,12 @@ export class ClockView {
             (select as HTMLSelectElement).innerHTML = ClockView.generateTimeZoneOptions();
         });
 
-        const timezoneSelect = document.getElementById('timezone-select') as HTMLSelectElement;
-        if (timezoneSelect) {
-            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
-            timezoneSelect.addEventListener('change', () => {
-                const offset = parseInt(timezoneSelect.value, 10);
-                this.models.forEach(model => model.setTimezoneOffset(offset));
-                this.updateClocks();
-            });
-        }
+        EventHandler.addChangeListener('timezone-select', (event: Event) => {
+            const selectElement = event.target as HTMLSelectElement;
+            const offset = parseInt(selectElement.value, 10);
+            this.models.forEach(model => model.setTimezoneOffset(offset));
+            this.updateClocks();
+        });
     }
 
     /** Starts the interval to update clocks every second */
