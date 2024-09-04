@@ -15,6 +15,7 @@ var ClockElementId;
     ClockElementId["DeleteButton"] = "delete-button";
     ClockElementId["FormatButton"] = "format-button";
     ClockElementId["ResetButton"] = "reset-button";
+    ClockElementId["DisplayModeButton"] = "display-mode-button";
 })(ClockElementId || (exports.ClockElementId = ClockElementId = {}));
 // Function to get all enum values as an array
 const getClockElementIds = () => {

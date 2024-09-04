@@ -48,16 +48,17 @@ export class ClockView {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
         this.setElementIds(clockElement, index);
 
-        // Set the ID for the outer clock container for querying
-        const clockContainer = clockElement.querySelector('.clock-container') as HTMLElement;
-        if (clockContainer) {
-            clockContainer.id = `clock-${index}`;
+        // Add event listener for switching display mode
+        const switchDisplayButton = clockElement.querySelector('.display-mode-button') as HTMLButtonElement;
+        if (switchDisplayButton) {
+            switchDisplayButton.addEventListener('click', () => this.toggleDisplayMode(index));
         }
 
         return clockElement;
     }
 
 
+    /** Sets unique IDs for elements in a clock based on its index */
     /** Sets unique IDs for elements in a clock based on its index */
     private setElementIds(clockElement: HTMLElement, index: number): void {
         const elementIds = getClockElementIds();
@@ -67,7 +68,14 @@ export class ClockView {
                 element.id = `${id}-${index}`;
             }
         });
+
+        // Set the ID for the clock container itself
+        const clockContainer = clockElement.querySelector('.clock-container') as HTMLElement;
+        if (clockContainer) {
+            clockContainer.id = `clock-${index}`; // Ensure this ID is correctly set
+        }
     }
+
 
     /** Public method to add a new clock */
     public addClock(): void {
@@ -193,4 +201,58 @@ export class ClockView {
             .map(offset => `<option value="${offset}">${getTimeZoneLabel(offset as TimeZoneOffset)}</option>`)
             .join('');
     }
+
+    /**Code for handling analog mode***/
+    /** Toggle display mode between analog and digital for a specific clock */
+    private toggleDisplayMode(index: number): void {
+        const clockElement = document.getElementById(`clock-${index}`) as HTMLElement;
+        const isAnalogMode = clockElement.classList.contains('analog-mode');
+
+        if (isAnalogMode) {
+            // Switch to digital mode
+            clockElement.classList.remove('analog-mode');
+            clockElement.classList.add('digital-mode');
+            this.hideAnalogElements(clockElement);
+            this.showDigitalElements(clockElement);
+        } else {
+            // Switch to analog mode
+            clockElement.classList.remove('digital-mode');
+            clockElement.classList.add('analog-mode');
+            this.showAnalogElements(clockElement);
+            this.hideDigitalElements(clockElement);
+        }
+    }
+
+    /** Hide elements specific to analog mode */
+    private hideAnalogElements(clockElement: HTMLElement): void {
+        const handsContainer = clockElement.querySelector('.clock-hands') as HTMLElement;
+        if (handsContainer) {
+            handsContainer.classList.add('hidden');
+        }
+    }
+
+    /** Show elements specific to analog mode */
+    private showAnalogElements(clockElement: HTMLElement): void {
+        const handsContainer = clockElement.querySelector('.clock-hands') as HTMLElement;
+        if (handsContainer) {
+            handsContainer.classList.remove('hidden');
+        }
+    }
+
+    /** Hide elements specific to digital mode */
+    private hideDigitalElements(clockElement: HTMLElement): void {
+        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
+        if (timeDisplay) {
+            timeDisplay.classList.add('hidden');
+        }
+    }
+
+    /** Show elements specific to digital mode */
+    private showDigitalElements(clockElement: HTMLElement): void {
+        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
+        if (timeDisplay) {
+            timeDisplay.classList.remove('hidden');
+        }
+    }
+
 }

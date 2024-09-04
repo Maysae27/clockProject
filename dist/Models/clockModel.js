@@ -14,6 +14,7 @@ class ClockModel {
         this.editCycleCount = 0;
         this.isEditing = false;
         this.is24HourFormat = true;
+        this.isAnalog = false;
     }
     updateTime(date) {
         const utcHours = date.getUTCHours();
@@ -45,6 +46,7 @@ class ClockModel {
     * Each call advances to the next mode in the cycle.
     * */
     cycleEditable() {
+        console.log(`Cycling editable mode: cycle count is now ${this.editCycleCount}`);
         this.editCycleCount = (this.editCycleCount + 1) % 3;
         switch (this.editCycleCount) {
             case 0:
@@ -105,6 +107,11 @@ class ClockModel {
     toggleFormat() {
         this.is24HourFormat = !this.is24HourFormat;
         console.log(`Time format toggled. Now 24-hour format is: ${this.is24HourFormat}`);
+    }
+    /** Toggles between analog and digital display modes. */
+    toggleDisplayMode() {
+        this.isAnalog = !this.isAnalog;
+        console.log(`Display mode toggled. Now in ${this.isAnalog ? 'Analog' : 'Digital'} mode.`);
     }
     /**Utility function: Returns either "AM" or "PM" based on the current hour and format.**/
     getAmPm() {

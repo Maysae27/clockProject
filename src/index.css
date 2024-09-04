@@ -545,21 +545,24 @@ button {
     pointer-events: none;
 }
 
+/* Hide clock hands when in digital mode */
 .clock-hands.hidden {
     display: none;
 }
 
-
-/* Style for clock hands */
+/* Correctly position and style clock hands in analog mode */
 .hour-hand, .minute-hand, .second-hand {
     position: absolute;
+    bottom: 50%;
+    left: 50%;
     transform-origin: bottom center;
-    transform: rotate(0deg);
+    transform: translate(-50%, 100%) rotate(0deg);
 }
+
 
 .hour-hand {
     width: 6px;
-    height: 60px;
+    height: 70px;
     background: #000;
     border-radius: 3px;
 }
@@ -573,7 +576,7 @@ button {
 
 .second-hand {
     width: 2px;
-    height: 100px;
+    height: 90px;
     background: red;
     border-radius: 1px;
 }
@@ -585,5 +588,13 @@ button {
 
 /* Hide background for digital clock mode */
 .digital-background {
+    display: none;
+}
+
+
+/* Hide elements when in analog mode*/
+.analog-mode .buttons-container,
+.analog-mode .timezone-wrapper,
+.analog-mode .time-display {
     display: none;
 }
