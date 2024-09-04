@@ -6,50 +6,46 @@ class ClockController {
     constructor(model, view) {
         this.model = model;
         this.view = view;
-        this.initialize();
+        // Set up event listeners for buttons
+        this.setupEventListeners();
     }
-    initialize() {
-        var _a, _b, _c;
-        (_a = document.getElementById('mode-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => this.handleModeButton());
-        (_b = document.getElementById('increase-button')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => this.handleIncreaseButton());
-        (_c = document.getElementById('light-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => this.handleLightButton());
-        setInterval(() => {
-            if (this.model.editable === 'none') {
-                // Update the model time
-                const now = new Date();
-                this.model.hours = now.getHours();
-                this.model.minutes = now.getMinutes();
-                this.view.updateDisplay();
-            }
-        }, 1000);
+    setupEventListeners() {
+        this.lightButtonEventListener();
+        this.modeButtonEventListener();
+        this.increaseButtonEventListener();
     }
-    handleModeButton() {
-        if (this.model.editable === 'none') {
-            this.model.editable = 'hours';
+    lightButtonEventListener() {
+        const lightButton = document.getElementById('light-button');
+        if (lightButton) {
+            lightButton.removeEventListener('click', this.handleLightButtonClick);
+            lightButton.addEventListener('click', this.handleLightButtonClick.bind(this));
         }
-        else if (this.model.editable === 'hours') {
-            this.model.editable = 'minutes';
+    }
+    modeButtonEventListener() {
+        const modeButton = document.getElementById('mode-button');
+        if (modeButton) {
+            modeButton.removeEventListener('click', this.handleModeButtonClick);
+            modeButton.addEventListener('click', this.handleModeButtonClick.bind(this));
         }
-        else {
-            this.model.editable = 'none';
+    }
+    increaseButtonEventListener() {
+        const increaseButton = document.getElementById('increase-button');
+        if (increaseButton) {
+            increaseButton.removeEventListener('click', this.handleIncreaseButtonClick);
+            increaseButton.addEventListener('click', this.handleIncreaseButtonClick.bind(this));
         }
+    }
+    handleLightButtonClick() {
+        this.model.toggleLight();
         this.view.updateDisplay();
     }
-    handleIncreaseButton() {
-        this.model.incrementTime();
+    handleModeButtonClick() {
+        this.model.cycleEditable();
         this.view.updateDisplay();
     }
-    handleLightButton() {
-        const body = document.body;
-        if (body.classList.contains('light-on')) {
-            body.classList.remove('light-on');
-            body.classList.add('light-off');
-        }
-        else {
-            body.classList.remove('light-off');
-            body.classList.add('light-on');
-        }
-        this.view.updateDisplay();
+    handleIncreaseButtonClick() {
+        console.log('Increase button clicked');
+        this.view.increaseTime();
     }
 }
 exports.ClockController = ClockController;
