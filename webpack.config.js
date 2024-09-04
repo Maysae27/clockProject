@@ -6,7 +6,8 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
   },
   module: {
     rules: [
@@ -17,7 +18,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'] // Loaders for CSS files
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -31,14 +32,13 @@ module.exports = {
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, 'src'),
     },
     compress: true,
     host: '0.0.0.0',
     port: 1234,
     allowedHosts: 'all',
-    hot: false, // Disable Hot Module Replacement
-    liveReload: false, // Disable live reloading
+    hot: false,
+    liveReload: false,
   }
-
 };

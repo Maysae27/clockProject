@@ -1,9 +1,7 @@
-import { ClockModel } from "./Models/clockModel";
-import { ClockView } from "./Views/clockView";
-import { ClockController } from "./Controllers/clockController";
+import { HomePageview} from "./Views/HomePageview";
+import { HomePageController} from "./Controllers/HomePageController";
 
-// Initial setup
-const initialModels = [new ClockModel()]; // initial model
-const containerId = 'clock-container';
-const clockView = new ClockView(initialModels, containerId);
-const clockController = new ClockController(initialModels, clockView);
+document.addEventListener('DOMContentLoaded', () => {
+    const homepageView = new HomePageview('main-content');
+    new HomePageController(homepageView);
+});

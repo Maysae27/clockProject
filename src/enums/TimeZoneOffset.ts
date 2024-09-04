@@ -25,8 +25,6 @@ export enum TimeZoneOffset {
     GMT_PLUS_10 = 10,
     GMT_PLUS_11 = 11,
     GMT_PLUS_12 = 12,
-    GMT_PLUS_13 = 13,
-    GMT_PLUS_14 = 14
 }
 
 // Function to get the label for the time zone offset

@@ -1,144 +1,152 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClockView = void 0;
+const clockModel_1 = require("../Models/clockModel");
+const TimeZoneOffset_1 = require("../enums/TimeZoneOffset");
+const ClockElementId_1 = require("../enums/ClockElementId");
 class ClockView {
     constructor(models, containerId) {
         this.models = models;
         this.container = document.getElementById(containerId);
-        this.template = document.getElementById('clock-template');
-        if (!this.template) {
-            throw new Error("Clock template not found!");
+        if (!this.container) {
+            throw new Error(`Container with ID ${containerId} not found!`);
         }
-        this.renderClocks();
-        this.startClockUpdates(); // Start the clock updates
+        // Fetch template now that the homepage is loaded
+        this.template = this.getTemplateElement('clock-template');
+        this.renderClocks(); // Render clocks after initializing
     }
-    startClockUpdates() {
-        setInterval(() => {
-            this.models.forEach(model => model.advanceTime()); // Update the time in each model
-            this.updateClocks(); // Refresh the view
-        }, 1000); // Update every second
+    /** Loads the homepage template into the main content area */
+    loadHomepageTemplate() {
+        console.log('Fetching homepage template...');
+        return fetch('templates/homepage.html')
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+            .then(html => {
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = html;
+                this.container = document.getElementById('clock-container');
+                if (!this.container) {
+                    throw new Error('Clock container not found!');
+                }
+                this.template = this.getTemplateElement('clock-template');
+                this.renderClocks();
+            }
+            else {
+                throw new Error('Main content container not found!');
+            }
+        })
+            .catch(error => {
+            console.error('Error in loadHomepageTemplate:', error);
+            throw error; // Rethrow to handle in the calling code
+        });
     }
+    /** Utility method to retrieve template element */
+    getTemplateElement(templateId) {
+        if (!this.template) {
+            const template = document.getElementById(templateId);
+            if (!template) {
+                throw new Error(`Template with ID ${templateId} not found!`);
+            }
+            return template;
+        }
+        return this.template;
+    }
+    /** Renders all clocks in the container */
     renderClocks() {
-        this.container.innerHTML = ''; // Clear existing clocks
+        this.container.innerHTML = '';
         this.models.forEach((_, index) => {
             const clockElement = this.createClockElement(index);
             this.container.appendChild(clockElement);
         });
         this.updateClocks();
     }
+    /** Creates a clock element using the template */
     createClockElement(index) {
         const clockElement = this.template.content.cloneNode(true);
-        // Add unique IDs to elements to avoid conflicts when querying them
-        const timeDisplay = clockElement.querySelector('.time-display');
-        timeDisplay.id = `time-display-${index}`;
-        const hoursDisplay = clockElement.querySelector('.hours-display');
-        hoursDisplay.id = `hours-display-${index}`;
-        const minutesDisplay = clockElement.querySelector('.minutes-display');
-        minutesDisplay.id = `minutes-display-${index}`;
-        const secondsDisplay = clockElement.querySelector('.seconds-display');
-        secondsDisplay.id = `seconds-display-${index}`;
-        const modeButton = clockElement.querySelector('.mode-button');
-        modeButton.id = `mode-button-${index}`;
-        const increaseButton = clockElement.querySelector('.increase-button');
-        increaseButton.id = `increase-button-${index}`;
-        const lightButton = clockElement.querySelector('.light-button');
-        lightButton.id = `light-button-${index}`;
-        const deleteButton = clockElement.querySelector('.delete-button');
-        deleteButton.id = `delete-button-${index}`;
-        this.setupClockEventListeners(index); // Ensure event listeners are set up for the new clock
+        this.setElementIds(clockElement, index);
         return clockElement;
     }
-    setupClockEventListeners(index) {
-        const lightButton = document.getElementById(`light-button-${index}`);
-        const modeButton = document.getElementById(`mode-button-${index}`);
-        const increaseButton = document.getElementById(`increase-button-${index}`);
-        const deleteButton = document.getElementById(`delete-button-${index}`);
-        if (lightButton) {
-            lightButton.addEventListener('click', () => {
-                this.models[index].toggleLight();
-                this.updateClocks();
-            });
-        }
-        if (modeButton) {
-            modeButton.addEventListener('click', () => {
-                this.models[index].cycleEditable();
-                this.updateClocks();
-            });
-        }
-        if (increaseButton) {
-            increaseButton.addEventListener('click', () => {
-                this.increaseTime(index);
-            });
-        }
-        if (deleteButton) {
-            deleteButton.addEventListener('click', () => {
-                this.deleteClock(index);
-            });
-        }
-    }
-    addClock(model) {
-        this.models.push(model);
-        const newClockElement = this.createClockElement(this.models.length - 1);
-        this.container.appendChild(newClockElement);
-        this.updateClocks();
-        this.setupClockEventListeners(this.models.length - 1);
-    }
-    deleteClock(index) {
-        this.models.splice(index, 1);
-        this.renderClocks(); // Re-render all clocks
-    }
-    increaseTime(index) {
-        if (this.models[index].editable === 'hours') {
-            this.models[index].increaseHours();
-        }
-        else if (this.models[index].editable === 'minutes') {
-            this.models[index].increaseMinutes();
-        }
-        this.updateClocks();
-    }
-    updateClocks() {
-        this.models.forEach((model, index) => {
-            const hoursDisplay = document.getElementById(`hours-display-${index}`);
-            const minutesDisplay = document.getElementById(`minutes-display-${index}`);
-            const secondsDisplay = document.getElementById(`seconds-display-${index}`);
-            if (hoursDisplay && minutesDisplay && secondsDisplay) {
-                hoursDisplay.textContent = model.hours.toString().padStart(2, '0');
-                minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
-                secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
+    /** Sets unique IDs for elements in a clock based on its index */
+    setElementIds(clockElement, index) {
+        const elementIds = (0, ClockElementId_1.getClockElementIds)();
+        elementIds.forEach(id => {
+            const element = clockElement.querySelector(`.${id}`);
+            if (element) {
+                element.id = `${id}-${index}`;
             }
-            const timeDisplay = document.getElementById(`time-display-${index}`);
-            if (timeDisplay) {
-                if (model.isLightOn) {
-                    timeDisplay.style.backgroundColor = '#FBE106';
-                    timeDisplay.style.color = 'black';
-                }
-                else {
-                    timeDisplay.style.backgroundColor = '';
-                    timeDisplay.style.color = '';
-                }
-            }
-            this.handleBlinking(model, index);
         });
     }
+    /** Public method to add a new clock */
+    addClock() {
+        const newModel = new clockModel_1.ClockModel(0);
+        this.models.push(newModel);
+        const clockElement = this.createClockElement(this.models.length - 1);
+        this.container.appendChild(clockElement);
+        this.populateTimezoneSelect(this.models.length - 1);
+    }
+    /** Public method to delete a clock */
+    deleteClock(index) {
+        this.models.splice(index, 1);
+        this.renderClocks();
+    }
+    /** Public method to update all clocks */
+    updateClocks() {
+        this.models.forEach((model, index) => {
+            this.updateClockDisplay(index, model);
+            this.handleBlinking(model, index);
+        });
+        this.populateTimezoneSelects();
+    }
+    /** Updates the display for a specific clock */
+    updateClockDisplay(index, model) {
+        const hoursDisplay = document.getElementById(`hours-display-${index}`);
+        const minutesDisplay = document.getElementById(`minutes-display-${index}`);
+        const secondsDisplay = document.getElementById(`seconds-display-${index}`);
+        const timeDisplay = document.getElementById(`time-display-${index}`);
+        if (hoursDisplay && minutesDisplay && secondsDisplay) {
+            hoursDisplay.textContent = model.getFormattedHours();
+            minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
+            secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
+            const amPmText = model.getAmPm();
+            if (amPmText) {
+                secondsDisplay.textContent += ` ${amPmText}`;
+            }
+        }
+        if (timeDisplay) {
+            timeDisplay.style.backgroundColor = model.isLightOn ? '#FBE106' : '';
+            timeDisplay.style.color = model.isLightOn ? 'black' : '';
+        }
+    }
+    /** To handle blinking effect for editable fields: hours or minutes */
     handleBlinking(model, index) {
         const hoursDisplay = document.getElementById(`hours-display-${index}`);
         const minutesDisplay = document.getElementById(`minutes-display-${index}`);
-        if (hoursDisplay) {
-            hoursDisplay.classList.remove('blinking');
+        hoursDisplay === null || hoursDisplay === void 0 ? void 0 : hoursDisplay.classList.toggle('blinking', model.editable === 'hours');
+        minutesDisplay === null || minutesDisplay === void 0 ? void 0 : minutesDisplay.classList.toggle('blinking', model.editable === 'minutes');
+    }
+    /** Populates the timezone select dropdown for all clocks */
+    populateTimezoneSelects() {
+        this.models.forEach((_, index) => this.populateTimezoneSelect(index));
+    }
+    /** Populates the timezone select dropdown for a specific clock */
+    populateTimezoneSelect(index) {
+        const timezoneSelect = document.getElementById(`timezone-select-${index}`);
+        if (timezoneSelect) {
+            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+            timezoneSelect.value = this.models[index].timezoneOffset.toString();
         }
-        if (minutesDisplay) {
-            minutesDisplay.classList.remove('blinking');
-        }
-        if (model.editable === 'hours') {
-            if (hoursDisplay) {
-                hoursDisplay.classList.add('blinking');
-            }
-        }
-        else if (model.editable === 'minutes') {
-            if (minutesDisplay) {
-                minutesDisplay.classList.add('blinking');
-            }
-        }
+    }
+    /** Static method to generate timezone options */
+    static generateTimeZoneOptions() {
+        return Object.values(TimeZoneOffset_1.TimeZoneOffset)
+            .filter(value => typeof value === 'number')
+            .map(offset => `<option value="${offset}">${(0, TimeZoneOffset_1.getTimeZoneLabel)(offset)}</option>`)
+            .join('');
     }
 }
 exports.ClockView = ClockView;

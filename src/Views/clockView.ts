@@ -11,8 +11,15 @@ export class ClockView {
         this.models = models;
         this.container = document.getElementById(containerId) as HTMLElement;
         this.template = this.getTemplateElement('clock-template');
-
         this.renderClocks();
+        this.startClockUpdates();
+    }
+
+    private startClockUpdates(): void {
+        setInterval(() => {
+            this.models.forEach(model => model.advanceTime());
+            this.updateClocks();
+        }, 1000);
     }
 
     /** Utility method to retrieve template element */
