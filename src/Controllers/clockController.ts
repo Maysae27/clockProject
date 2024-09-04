@@ -56,6 +56,8 @@ export class ClockController {
         EventHandler.addClickListener(`delete-button-${index}`, () => this.deleteClock(index));
         EventHandler.addClickListener(`format-button-${index}`, () => this.toggleFormat(index));
         EventHandler.addClickListener(`reset-button-${index}`, () => this.resetTime(index));
+        EventHandler.addClickListener(`display-mode-button-${index}`, () => this.toggleDisplayMode(index));
+
     }
 
     /**Setting up a button listener **/
@@ -92,6 +94,7 @@ export class ClockController {
 
     /**Triggering the editing cycle when button: mode is pressed (3 phases) **/
     private cycleEditable(index: number): void {
+        console.log("Cycling editable mode for clock index:", index);
         this.models[index].cycleEditable();
         this.view.updateClocks();
     }
@@ -120,4 +123,13 @@ export class ClockController {
         this.models[index].resetTime();
         this.view.updateClocks();
     }
+
+    /** Method to handle the toggle of display mode: analog or digital */
+    private toggleDisplayMode(index: number): void {
+        console.log("Toggling display mode for clock index:", index);
+        this.models[index].toggleDisplayMode();
+        this.view.updateClocks();
+    }
+
+
 }

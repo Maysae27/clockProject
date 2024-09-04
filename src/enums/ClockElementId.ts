@@ -10,7 +10,8 @@ export enum ClockElementId {
     LightButton = 'light-button',
     DeleteButton = 'delete-button',
     FormatButton = 'format-button',
-    ResetButton = 'reset-button'
+    ResetButton = 'reset-button',
+    DisplayModeButton = 'display-mode-button'
 }
 
 // Function to get all enum values as an array

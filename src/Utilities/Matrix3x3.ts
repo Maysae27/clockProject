@@ -1,5 +1,5 @@
 class Matrix3x3 {
-    private matrix: number[][];
+     matrix: number[][];
 
     constructor(values: number[][]) {
         this.matrix = values;
@@ -72,7 +72,6 @@ function createTranslationMatrix(tx: number, ty: number): Matrix3x3 {
     ]);
 }
 
-
 function createRotationMatrix(angle: number): Matrix3x3 {
     const rad = angle * Math.PI / 180;
     return new Matrix3x3([
@@ -82,7 +81,6 @@ function createRotationMatrix(angle: number): Matrix3x3 {
     ]);
 }
 
-
 function createScalingMatrix(sx: number, sy: number): Matrix3x3 {
     return new Matrix3x3([
         [sx, 0, 0],
@@ -90,6 +88,7 @@ function createScalingMatrix(sx: number, sy: number): Matrix3x3 {
         [0, 0, 1]
     ]);
 }
+
 
 
 const translation = createTranslationMatrix(5, 10);

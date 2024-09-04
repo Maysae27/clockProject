@@ -9,7 +9,7 @@ export class ClockModel {
     isEditing: boolean; // Indicates if the clock is currently in editing mode
     is24HourFormat: boolean; // Indicates whether the clock is in 24-hour or 12-hour format
     timezoneOffset: number; // Timezone offset in hours from UTC
-
+    isAnalog: boolean;
 
     constructor(timezoneOffset: number = 0) {
         this.timezoneOffset = timezoneOffset;
@@ -23,6 +23,7 @@ export class ClockModel {
         this.editCycleCount = 0;
         this.isEditing = false;
         this.is24HourFormat = true;
+        this.isAnalog = false;
     }
 
 
@@ -63,6 +64,7 @@ export class ClockModel {
     * */
 
     cycleEditable(): void {
+        console.log(`Cycling editable mode: cycle count is now ${this.editCycleCount}`);
         this.editCycleCount = (this.editCycleCount + 1) % 3;
 
         switch (this.editCycleCount) {
@@ -134,6 +136,11 @@ export class ClockModel {
         console.log(`Time format toggled. Now 24-hour format is: ${this.is24HourFormat}`);
     }
 
+    /** Toggles between analog and digital display modes. */
+    toggleDisplayMode(): void {
+        this.isAnalog = !this.isAnalog;
+        console.log(`Display mode toggled. Now in ${this.isAnalog ? 'Analog' : 'Digital'} mode.`);
+    }
 
     /**Utility function: Returns either "AM" or "PM" based on the current hour and format.**/
     getAmPm(): string {
