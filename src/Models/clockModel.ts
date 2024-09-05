@@ -9,7 +9,7 @@ export class ClockModel {
     isEditing: boolean; // Indicates if the clock is currently in editing mode
     is24HourFormat: boolean; // Indicates whether the clock is in 24-hour or 12-hour format
     timezoneOffset: number; // Timezone offset in hours from UTC
-    isAnalog: boolean;
+    isAnalog: boolean; //Clock mode, digital or analog
 
     constructor(timezoneOffset: number = 0) {
         this.timezoneOffset = timezoneOffset;

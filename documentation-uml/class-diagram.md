@@ -1,91 +1,102 @@
 ```mermaid
 classDiagram
-    %% Model
     class ClockModel {
-        +int hours
-        +int minutes
-        +int seconds
-        +string editable
-        +bool isLightOn
-        +int editCycleCount
-        +bool isEditing
-        +bool is24HourFormat
-        +int timezoneOffset
-        +constructor(timezoneOffset: number)
-        +void setTimezoneOffset(offset: number)
-        +void finalizeEdit()
-        +void cycleEditable()
-        +void advanceTime()
-        +void resetTime()
-        +void increaseHours()
-        +void increaseMinutes()
-        +void increaseSeconds()
-        +void toggleLight()
-        +void toggleFormat()
-        +string getAmPm()
-        +string getFormattedHours()
-        -void updateTime(date: Date)
+        +hours: number
+        +minutes: number
+        +seconds: number
+        +editable: 'hours' | 'minutes' | 'none'
+        +isLightOn: boolean
+        +editCycleCount: number
+        +isEditing: boolean
+        +is24HourFormat: boolean
+        +timezoneOffset: number
+        +isAnalog: boolean
+        +constructor(timezoneOffset: number = 0)
+        +setTimezoneOffset(offset: number): void
+        +finalizeEdit(): void
+        +cycleEditable(): void
+        +advanceTime(): void
+        +resetTime(): void
+        +increaseHours(): void
+        +increaseMinutes(): void
+        +increaseSeconds(): void
+        +toggleLight(): void
+        +toggleFormat(): void
+        +toggleDisplayMode(): void
+        +getAmPm(): string
+        +getFormattedHours(): string
     }
 
-    %% View
     class ClockView {
-        -ClockModel[] models
-        -HTMLElement container
-        -HTMLTemplateElement template
+        +models: ClockModel[]
+        +container: HTMLElement
+        +template: HTMLTemplateElement
         +constructor(models: ClockModel[], containerId: string)
-        +void addClock()
-        +void deleteClock(index: number)
-        +void updateClocks()
-        -void startClockUpdates()
-        -HTMLTemplateElement getTemplateElement(templateId: string)
-        -void renderClocks()
-        -HTMLElement createClockElement(index: number)
-        -void setElementIds(clockElement: HTMLElement, index: number)
-        -void updateClockDisplay(index: number, model: ClockModel)
-        -void handleBlinking(model: ClockModel, index: number)
-        -void populateTimezoneSelects()
-        -void populateTimezoneSelect(index: number)
-        +static string generateTimeZoneOptions()
+        +renderClocks(): void
+        +updateClocks(): void
+        +addClock(): void
+        +deleteClock(index: number): void
+        +toggleDisplayMode(index: number): void
     }
 
-    %% Controller
     class ClockController {
-        -ClockModel[] models
-        -ClockView view
+        +models: ClockModel[]
+        +view: ClockView
         +constructor(models: ClockModel[], view: ClockView)
-        -void setupGlobalEventListeners()
-        -void setupClock(index: number)
-        -void setupTimezoneSelect(index: number)
-        -void setupButtonListeners(index: number)
-        +void addClock()
-        -void toggleLight(index: number)
-        -void cycleEditable(index: number)
-        +void increaseTime(index: number)
-        -void deleteClock(index: number)
-        -void toggleFormat(index: number)
-        -void resetTime(index: number)
+        +setupGlobalEventListeners(): void
+        +setupAllClocks(): void
+        +setupClock(index: number): void
+        +setupAddButtonListener(): void
+        +addClock(): void
+        +setupButtonListeners(index: number): void
+        +setupButtonListener(buttonId: string, handler: () => void): void
+        +setupTimezoneSelect(index: number): void
+        +toggleLight(index: number): void
+        +cycleEditable(index: number): void
+        +increaseTime(index: number): void
+        +deleteClock(index: number): void
+        +toggleFormat(index: number): void
+        +resetTime(index: number): void
+        +toggleDisplayMode(index: number): void
     }
 
-    %% HomePage View
     class HomePageView {
-        -string containerId
         +constructor(containerId: string)
-        +Promise<void> loadHomepageTemplate()
+        +loadHomepageTemplate(): Promise<void>
     }
 
-    %% HomePage Controller
     class HomePageController {
-        -HomePageView homepageView
-        -ClockView clockView
-        -ClockController clockController
+        +homepageView: HomePageView
+        +clockView: ClockView | undefined
+        +clockController: ClockController | undefined
         +constructor(homepageView: HomePageView)
-        -void initialize()
+        +initialize(): void
     }
 
-    %% Relationships
-    ClockController --> ClockModel : uses
-    ClockController --> ClockView : manages
-    ClockView --> ClockModel : displays
-    HomePageController --> HomePageView : uses
-    HomePageController --> ClockView : initializes
-    HomePageController --> ClockController : initializes
+    class Matrix3x3 {
+        +matrix: number[][]
+        +constructor(values: number[][])
+        +multiply(other: Matrix3x3): Matrix3x3
+        +invert(): Matrix3x3 | null
+        +transformPoint(x: number, y: number): [number, number]
+    }
+
+    class DisplayViewUtils {
+        +getElementById<T extends HTMLElement>(id: string): T | null
+        +showElement(element: HTMLElement): void
+        +hideElement(element: HTMLElement): void
+        +toggleDisplayMode(element: HTMLElement, isAnalog: boolean): void
+        +setElementIds(clockElement: HTMLElement, index: number, elementIds: string[]): void
+        +populateTimezoneSelect(selectElement: HTMLSelectElement, timezoneOffset: number): void
+        +generateTimeZoneOptions(): string
+    }
+
+    
+    ClockModel --> "1" ClockView : manages
+    ClockView --> "1" ClockController : uses
+    ClockController --> "1" ClockModel : manipulates
+    ClockView --> "1" Matrix3x3 : uses
+    ClockView --> "1" DisplayViewUtils : uses
+    HomePageController --> "1" HomePageView : manages
+    HomePageController --> "1" ClockController : uses
+    HomePageController --> "1" ClockView : initializes
