@@ -179,10 +179,21 @@ export class ClockView {
 
         if (!clockElement) return;
 
-        const isAnalog = clockElement.classList.contains('analog-mode');  // Check if it's in analog mode
+        const isAnalog = clockElement.classList.contains('analog-mode');
 
         DisplayViewUtils.toggleDisplayMode(clockElement, isAnalog);
 
-        this.updateClockDisplay(index, this.models[index]); // Update clock display on mode change
+        // Get the clock hands element
+        const clockHands = clockElement.querySelector('.clock-hands') as HTMLElement;
+
+        // Hide or show clock hands based on the mode
+        if (isAnalog) {
+            DisplayViewUtils.hideElement(clockHands);  // digital mode
+        } else {
+            DisplayViewUtils.showElement(clockHands);  // analog mode
+        }
+
+        this.updateClockDisplay(index, this.models[index]); // Update clock display on change
     }
+
 }
