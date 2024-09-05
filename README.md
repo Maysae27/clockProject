@@ -26,10 +26,10 @@
 - **Architecture**: MVC pattern with `ClockModel`, `ClockView`, and `ClockController`.
 
 ### UML Class Diagram for Part A
-![UML Diagram Part A](documentation-uml/.png)
+![UML Diagram Part A](documentation-uml/images/partA-uml.png)
 
 ### Result - UI for Part A
-![UI for Part A](documentaion-uml/partA-Result.png)
+![UI for Part A](documentation-uml/images/partA-Result.png)
 
 ---
 
@@ -49,10 +49,10 @@ This was importatnt to reduce the responsability of the clock view/controller as
   - Each clock can be removed uppon click on a delete button. 
 
 ### UML Class Diagram for Part B
-![UML Diagram Part B](uml_part_b.png)
+![UML Diagram Part B](documentation-uml/images/partB-uml.png)
 
 ### Result - UI for Part B
-![UI for Part B](ui_part_b.png)
+![UI for Part B](documentation-uml/images/partB-Result.png)
 
 ---
 
