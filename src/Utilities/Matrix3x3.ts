@@ -1,4 +1,4 @@
-class Matrix3x3 {
+export class Matrix3x3 {
      matrix: number[][];
 
     constructor(values: number[][]) {
@@ -64,7 +64,7 @@ class Matrix3x3 {
     }
 }
 
-function createTranslationMatrix(tx: number, ty: number): Matrix3x3 {
+export function createTranslationMatrix(tx: number, ty: number): Matrix3x3 {
     return new Matrix3x3([
         [1, 0, tx],
         [0, 1, ty],
@@ -72,7 +72,7 @@ function createTranslationMatrix(tx: number, ty: number): Matrix3x3 {
     ]);
 }
 
-function createRotationMatrix(angle: number): Matrix3x3 {
+export function createRotationMatrix(angle: number): Matrix3x3 {
     const rad = angle * Math.PI / 180;
     return new Matrix3x3([
         [Math.cos(rad), -Math.sin(rad), 0],
@@ -81,7 +81,7 @@ function createRotationMatrix(angle: number): Matrix3x3 {
     ]);
 }
 
-function createScalingMatrix(sx: number, sy: number): Matrix3x3 {
+export function createScalingMatrix(sx: number, sy: number): Matrix3x3 {
     return new Matrix3x3([
         [sx, 0, 0],
         [0, sy, 0],

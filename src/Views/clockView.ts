@@ -1,12 +1,14 @@
-import {ClockModel} from "../Models/clockModel";
-import {TimeZoneOffset, getTimeZoneLabel} from '../enums/TimeZoneOffset'
-import {ClockElementId, getClockElementIds} from '../enums/ClockElementId';
-import {getHourRotation, getSecondRotation, getMinuteRotation} from "../Utilities/ClockUtils";
+import { ClockModel } from "../Models/clockModel";
+import { getHourRotation, getSecondRotation, getMinuteRotation } from "../Utilities/ClockUtils";
+import { createRotationMatrix, Matrix3x3 } from "../Utilities/Matrix3x3";
+import {getClockElementIds, } from "../enums/ClockElementId";
+import {DisplayViewUtils} from "../Utilities/DisplayUtils";
 
 export class ClockView {
-    private models: ClockModel[];
-    private container: HTMLElement;
-    private template: HTMLTemplateElement;
+
+    models: ClockModel[];
+    container: HTMLElement;
+    template: HTMLTemplateElement;
 
     constructor(models: ClockModel[], containerId: string) {
         this.models = models;
@@ -16,6 +18,7 @@ export class ClockView {
         this.startClockUpdates();
     }
 
+    /** Start updating clock at intervals */
     private startClockUpdates(): void {
         setInterval(() => {
             this.models.forEach(model => model.advanceTime());
@@ -26,233 +29,160 @@ export class ClockView {
     /** Utility method to retrieve template element */
     private getTemplateElement(templateId: string): HTMLTemplateElement {
         const template = document.getElementById(templateId) as HTMLTemplateElement;
-        if (!template) {
-            throw new Error(`Template with ID ${templateId} not found!`);
-        }
+        if (!template) throw new Error(`Template with ID ${templateId} not found!`);
         return template;
     }
 
-    /** Renders all clocks in the container */
+    /** Render all clocks */
     private renderClocks(): void {
-        this.container.innerHTML = '';
-        this.models.forEach((_, index) => {
-            const clockElement = this.createClockElement(index);
-            this.container.appendChild(clockElement);
-        });
-        this.updateClocks();
+        this.container.innerHTML = ''; // Clear the container
+        this.models.forEach((_, index) => this.createAndAppendClock(index));
+        this.updateClocks(); // Ensure clocks start in the correct mode
     }
 
-    /** Creates a clock element using the template */
-    /** Creates a clock element using the template */
+    /** Create and append a new clock element */
+    private createAndAppendClock(index: number): void {
+        const clockElement = this.createClockElement(index);
+        this.container.appendChild(clockElement);
+        this.populateTimezoneSelect(index); // Initialize timezones
+    }
+
+    /** Create a clock element from template */
     private createClockElement(index: number): HTMLElement {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
-        this.setElementIds(clockElement, index);
+        DisplayViewUtils.setElementIds(clockElement, index, getClockElementIds());
+        this.attachDisplayModeToggle(clockElement, index);
+        return clockElement;
+    }
 
-        // Add event listener for switching display mode
+    /** Attach display mode toggle button functionality */
+    private attachDisplayModeToggle(clockElement: HTMLElement, index: number): void {
         const switchDisplayButton = clockElement.querySelector('.display-mode-button') as HTMLButtonElement;
         if (switchDisplayButton) {
             switchDisplayButton.addEventListener('click', () => this.toggleDisplayMode(index));
         }
-
-        return clockElement;
     }
 
+    /** Adding a clock */
+    public addClock(): void {
+        const newModel = new ClockModel(0); // Adding default time offset (can be adjusted)
+        this.models.push(newModel);
+        this.createAndAppendClock(this.models.length - 1);
+    }
 
-    /** Sets unique IDs for elements in a clock based on its index */
-    /** Sets unique IDs for elements in a clock based on its index */
-    private setElementIds(clockElement: HTMLElement, index: number): void {
-        const elementIds = getClockElementIds();
-        elementIds.forEach(id => {
-            const element = clockElement.querySelector(`.${id}`) as HTMLElement;
-            if (element) {
-                element.id = `${id}-${index}`;
-            }
-        });
+    /** Deleting a clock */
+    public deleteClock(index: number): void {
+        this.models.splice(index, 1); // Remove clock model
+        this.renderClocks(); // Rerender all clocks
+    }
 
-        // Set the ID for the clock container itself
-        const clockContainer = clockElement.querySelector('.clock-container') as HTMLElement;
-        if (clockContainer) {
-            clockContainer.id = `clock-${index}`; // Ensure this ID is correctly set
+    /** Updating all clocks */
+    public updateClocks(): void {
+        this.models.forEach((model, index) => this.updateClockDisplay(index, model));
+        this.populateTimezoneSelects(); // Update timezone options if necessary
+    }
+
+    /** Update a specific clock display */
+    private updateClockDisplay(index: number, model: ClockModel): void {
+        if (model.isAnalog) {
+            this.updateAnalogClockDisplay(index, model);
+        } else {
+            this.updateDigitalClockDisplay(index, model);
+            this.handleBlinkingEffect(index, model);
         }
     }
 
-
-    /** Public method to add a new clock */
-    public addClock(): void {
-        const newModel = new ClockModel(0);
-        this.models.push(newModel);
-        const clockElement = this.createClockElement(this.models.length - 1);
-        this.container.appendChild(clockElement);
-        this.populateTimezoneSelect(this.models.length - 1);
-    }
-
-    /** Public method to delete a clock */
-    public deleteClock(index: number): void {
-        this.models.splice(index, 1);
-        this.renderClocks();
-    }
-
-    /** Public method to update all clocks */
-    public updateClocks(): void {
-        this.models.forEach((model, index) => {
-            if (model.isAnalog) {
-                this.updateAnalogClockDisplay(index, model);
-            } else {
-                this.updateDigitalClockDisplay(index, model);
-                this.handleBlinking(model, index);
-            }
-        });
-        this.populateTimezoneSelects();
-    }
-
-
-    /** Updates the display for a specific clock */
+    /** Update the digital clock display */
     private updateDigitalClockDisplay(index: number, model: ClockModel): void {
-        const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
-        const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
-        const secondsDisplay = document.getElementById(`seconds-display-${index}`) as HTMLSpanElement;
-        const timeDisplay = document.getElementById(`time-display-${index}`) as HTMLDivElement;
+        const hoursDisplay = DisplayViewUtils.getElementById<HTMLSpanElement>(`hours-display-${index}`);
+        const minutesDisplay = DisplayViewUtils.getElementById<HTMLSpanElement>(`minutes-display-${index}`);
+        const secondsDisplay = DisplayViewUtils.getElementById<HTMLSpanElement>(`seconds-display-${index}`);
+        const timeDisplay = DisplayViewUtils.getElementById<HTMLDivElement>(`time-display-${index}`);
 
         if (hoursDisplay && minutesDisplay && secondsDisplay) {
             hoursDisplay.textContent = model.getFormattedHours();
             minutesDisplay.textContent = model.minutes.toString().padStart(2, '0');
-            secondsDisplay.textContent = model.seconds.toString().padStart(2, '0');
-
-            const amPmText = model.getAmPm();
-            if (amPmText) {
-                secondsDisplay.textContent += ` ${amPmText}`;
-            }
+            secondsDisplay.textContent = `${model.seconds.toString().padStart(2, '0')} ${model.getAmPm() || ''}`;
         }
 
         if (timeDisplay) {
             timeDisplay.style.backgroundColor = model.isLightOn ? '#FBE106' : '';
             timeDisplay.style.color = model.isLightOn ? 'black' : '';
         }
-
     }
 
+    /** Update the analog clock display */
     private updateAnalogClockDisplay(index: number, model: ClockModel): void {
-        console.log('Updating analog clock', index);
-
-        const clockElement = document.querySelector(`#clock-${index}`) as HTMLElement;
-        if (!clockElement) {
-            console.error(`Clock element with index ${index} not found`);
-            return;
-        }
-
-        const clockHands = clockElement.querySelector('.clock-hands') as HTMLElement;
-        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
+        const clockElement = DisplayViewUtils.getElementById<HTMLElement>(`clock-${index}`);
+        if (!clockElement) return;
 
         const hoursHand = clockElement.querySelector('.hour-hand') as HTMLElement;
         const minutesHand = clockElement.querySelector('.minute-hand') as HTMLElement;
         const secondsHand = clockElement.querySelector('.second-hand') as HTMLElement;
 
-        if (hoursHand && minutesHand && secondsHand) {
-            const hoursRotation = getHourRotation(model.hours, model.minutes);
-            const minutesRotation = getMinuteRotation(model.minutes);
-            const secondsRotation = getSecondRotation(model.seconds);
+        this.updateClockHands(hoursHand, minutesHand, secondsHand, model);
 
-            hoursHand.style.transform = `rotate(${hoursRotation}deg)`;
-            minutesHand.style.transform = `rotate(${minutesRotation}deg)`;
-            secondsHand.style.transform = `rotate(${secondsRotation}deg)`;
-        }
-
-        // Show/Hide elements based on mode
-        if (clockHands && timeDisplay) {
-            if (model.isAnalog) {
-                clockHands.classList.remove('hidden');
-                timeDisplay.classList.add('hidden');
-            } else {
-                clockHands.classList.add('hidden');
-                timeDisplay.classList.remove('hidden');
-            }
-        }
+        const clockHands = clockElement.querySelector('.clock-hands') as HTMLElement;
+        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
+        DisplayViewUtils.toggleDisplayMode(clockHands, model.isAnalog);
     }
 
+    /** Update the clock hands rotation */
+    private updateClockHands(hoursHand: HTMLElement, minutesHand: HTMLElement, secondsHand: HTMLElement, model: ClockModel): void {
+        // Get the rotation angles for each hand
+        const hoursRotation = getHourRotation(model.hours, model.minutes);
+        const minutesRotation = getMinuteRotation(model.minutes);
+        const secondsRotation = getSecondRotation(model.seconds);
 
+        // Create rotation matrices for each hand
+        const hoursRotationMatrix = createRotationMatrix(hoursRotation);
+        const minutesRotationMatrix = createRotationMatrix(minutesRotation);
+        const secondsRotationMatrix = createRotationMatrix(secondsRotation);
 
-    /** To handle blinking effect for editable fields: hours or minutes */
-    private handleBlinking(model: ClockModel, index: number): void {
-        const hoursDisplay = document.getElementById(`hours-display-${index}`) as HTMLSpanElement;
-        const minutesDisplay = document.getElementById(`minutes-display-${index}`) as HTMLSpanElement;
+        // Convert each matrix to a CSS transform string and apply it to the corresponding hand
+        hoursHand.style.transform = this.matrixToCssTransform(hoursRotationMatrix);
+        minutesHand.style.transform = this.matrixToCssTransform(minutesRotationMatrix);
+        secondsHand.style.transform = this.matrixToCssTransform(secondsRotationMatrix);
+    }
+
+    /** Convert a Matrix3x3 to a CSS transform string */
+    private matrixToCssTransform(matrix: Matrix3x3): string {
+        const m = matrix.matrix;
+        return `matrix(${m[0][0]}, ${m[1][0]}, ${m[0][1]}, ${m[1][1]}, ${m[0][2]}, ${m[1][2]})`;
+    }
+
+    /** Handle blinking effect for editable fields */
+    private handleBlinkingEffect(index: number, model: ClockModel): void {
+        const hoursDisplay = DisplayViewUtils.getElementById<HTMLSpanElement>(`hours-display-${index}`);
+        const minutesDisplay = DisplayViewUtils.getElementById<HTMLSpanElement>(`minutes-display-${index}`);
 
         hoursDisplay?.classList.toggle('blinking', model.editable === 'hours');
         minutesDisplay?.classList.toggle('blinking', model.editable === 'minutes');
     }
 
-    /** Populates the timezone select dropdown for all clocks */
+    /** Populate timezone select for all clocks */
     private populateTimezoneSelects(): void {
         this.models.forEach((_, index) => this.populateTimezoneSelect(index));
     }
 
-    /** Populates the timezone select dropdown for a specific clock */
+    /** Populate timezone select for a specific clock */
     private populateTimezoneSelect(index: number): void {
-        const timezoneSelect = document.getElementById(`timezone-select-${index}`) as HTMLSelectElement;
+        const timezoneSelect = DisplayViewUtils.getElementById<HTMLSelectElement>(`timezone-select-${index}`);
         if (timezoneSelect) {
-            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
-            timezoneSelect.value = this.models[index].timezoneOffset.toString();
+            DisplayViewUtils.populateTimezoneSelect(timezoneSelect, this.models[index].timezoneOffset);
         }
     }
 
-    /** Static method to generate timezone options */
-    static generateTimeZoneOptions(): string {
-        return Object.values(TimeZoneOffset)
-            .filter(value => typeof value === 'number')
-            .map(offset => `<option value="${offset}">${getTimeZoneLabel(offset as TimeZoneOffset)}</option>`)
-            .join('');
-    }
-
-    /**Code for handling analog mode***/
-    /** Toggle display mode between analog and digital for a specific clock */
+    /** Toggle display mode between analog and digital */
     private toggleDisplayMode(index: number): void {
-        const clockElement = document.getElementById(`clock-${index}`) as HTMLElement;
-        const isAnalogMode = clockElement.classList.contains('analog-mode');
+        const clockElement = DisplayViewUtils.getElementById<HTMLElement>(`clock-${index}`);
 
-        if (isAnalogMode) {
-            // Switch to digital mode
-            clockElement.classList.remove('analog-mode');
-            clockElement.classList.add('digital-mode');
-            this.hideAnalogElements(clockElement);
-            this.showDigitalElements(clockElement);
-        } else {
-            // Switch to analog mode
-            clockElement.classList.remove('digital-mode');
-            clockElement.classList.add('analog-mode');
-            this.showAnalogElements(clockElement);
-            this.hideDigitalElements(clockElement);
-        }
+        if (!clockElement) return;
+
+        const isAnalog = clockElement.classList.contains('analog-mode');  // Check if it's in analog mode
+
+        DisplayViewUtils.toggleDisplayMode(clockElement, isAnalog);
+
+        this.updateClockDisplay(index, this.models[index]); // Update clock display on mode change
     }
-
-    /** Hide elements specific to analog mode */
-    private hideAnalogElements(clockElement: HTMLElement): void {
-        const handsContainer = clockElement.querySelector('.clock-hands') as HTMLElement;
-        if (handsContainer) {
-            handsContainer.classList.add('hidden');
-        }
-    }
-
-    /** Show elements specific to analog mode */
-    private showAnalogElements(clockElement: HTMLElement): void {
-        const handsContainer = clockElement.querySelector('.clock-hands') as HTMLElement;
-        if (handsContainer) {
-            handsContainer.classList.remove('hidden');
-        }
-    }
-
-    /** Hide elements specific to digital mode */
-    private hideDigitalElements(clockElement: HTMLElement): void {
-        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
-        if (timeDisplay) {
-            timeDisplay.classList.add('hidden');
-        }
-    }
-
-    /** Show elements specific to digital mode */
-    private showDigitalElements(clockElement: HTMLElement): void {
-        const timeDisplay = clockElement.querySelector('.time-display') as HTMLElement;
-        if (timeDisplay) {
-            timeDisplay.classList.remove('hidden');
-        }
-    }
-
 }

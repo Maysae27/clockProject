@@ -2,10 +2,11 @@ import { ClockModel } from "../Models/clockModel";
 import { ClockView } from "../Views/clockView";
 import { EventHandler } from '../Utilities/EventHandler';
 import '../index.css';
+import {DisplayViewUtils} from "../Utilities/DisplayUtils";
 
 export class ClockController {
-    private models: ClockModel[];
-    private view: ClockView;
+    models: ClockModel[];
+    view: ClockView;
 
     constructor(models: ClockModel[], view: ClockView) {
         this.models = models;
@@ -75,7 +76,7 @@ export class ClockController {
         const timezoneSelect = document.getElementById(timezoneSelectId) as HTMLSelectElement;
         if (timezoneSelect) {
             // Populate the select options
-            timezoneSelect.innerHTML = ClockView.generateTimeZoneOptions();
+            timezoneSelect.innerHTML = DisplayViewUtils.generateTimeZoneOptions();
 
             EventHandler.addChangeListener(timezoneSelectId, (event: Event) => {
                 const selectElement = event.target as HTMLSelectElement;
