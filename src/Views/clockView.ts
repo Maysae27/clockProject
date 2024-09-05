@@ -45,6 +45,7 @@ export class ClockView {
         const clockElement = this.createClockElement(index);
         this.container.appendChild(clockElement);
         this.populateTimezoneSelect(index); // Initialize timezones
+        //TODO: make sure the clock hands are not visible
     }
 
     /** Create a clock element from template */
@@ -84,6 +85,7 @@ export class ClockView {
 
     /** Update a specific clock display */
     private updateClockDisplay(index: number, model: ClockModel): void {
+        console.log(" update display");
         if (model.isAnalog) {
             this.updateAnalogClockDisplay(index, model);
         } else {

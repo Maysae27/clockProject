@@ -36,7 +36,7 @@
 
 ## Part B - Extend Your Watch
 -As for this part, I did a major refactoring, creating the HomePage template, controller and view. 
-This was importatnt to reduce the responsability of the clock view/controller as new functionnalities were added (buttons to the clock). 
+This was important to reduce the responsibility of the clock view/controller as new functionalities were added (buttons to the clock). 
 ### Functional Requirements
 - **Adding New Clocks**: 
   - A button allows adding new clocks, each synchronized and displaying the local time.
@@ -44,7 +44,7 @@ This was importatnt to reduce the responsability of the clock view/controller as
   
 - **Editing a Clock**:
   - Toggle between AM/PM and 24-hour format.
-  - Reset time while keeping the clock settings and timezone, uppon click on a reset button.
+  - Reset time while keeping the clock settings and timezone, upon click on a reset button.
   
 - **Managing Clocks**: 
   - Each clock can be removed uppon click on a delete button. 
@@ -58,13 +58,13 @@ This was importatnt to reduce the responsability of the clock view/controller as
 ---
 
 ## Part C - Further Extend Your Watch
-In this part I refactored the code again, adding new utility classes besides the resuired Matrix3x3. This was important to reduce again the responsability for the clock view/controller. This part was also marked by introducing a new display mode for the clock: the analog mode.
-I still have a little problem with display, when a clock is created for teh first time(digital mode is default), the clock hands appear. However, uppon switching mode to analog and then switching back to digital, the clock hands disappear(normal behaviour). I am still working on fixing this little issue :)
+In this part I refactored the code again, adding new utility classes besides the required Matrix3x3. This was important to reduce again the responsibility for the clock view/controller. This part was also marked by introducing a new display mode for the clock: the analog mode.
+I still have a little problem with display, when a clock is created for the first time(digital mode is default), the clock hands appear. However, upon switching mode to analog and then switching back to digital, the clock hands disappear(normal behaviour). I am still working on fixing this little issue :)
   
 ### Functional Requirements
 - **Matrix Transformations**: 
   - Utility functions allow defining and transforming 3x3 matrices.
-  - (extra)ClockUtilities: to allow retreiving the hours, minutes and seconds more efficiently. 
+  - (extra)ClockUtilities: to allow retrieving the hours, minutes and seconds more efficiently. 
   - (extra)DisplayUtilities: to manage display toggling between analog and digital mode.
   - Apply translation, rotation, and scaling to points.
 

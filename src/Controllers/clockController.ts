@@ -61,13 +61,6 @@ export class ClockController {
 
     }
 
-    /**Setting up a button listener **/
-    private setupButtonListener(buttonId: string, handler: () => void): void {
-        const button = document.getElementById(buttonId) as HTMLButtonElement;
-        if (button) {
-            button.onclick = handler;
-        }
-    }
 
     /**Time zone setup using an offset**/
     private setupTimezoneSelect(index: number): void {
