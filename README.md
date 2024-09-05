@@ -57,12 +57,14 @@ This was importatnt to reduce the responsability of the clock view/controller as
 ---
 
 ## Part C - Further Extend Your Watch
-In this part I refactored the code again, adding new utility classes besides the resuired Matrix3x3. This was important to reduce again the responsability for the clock view/controller. This part was also marked by introducing a new display mode for the clock: the analog mode. \n
+In this part I refactored the code again, adding new utility classes besides the resuired Matrix3x3. This was important to reduce again the responsability for the clock view/controller. This part was also marked by introducing a new display mode for the clock: the analog mode.
 The developped utilities classes are: 
-- Matrix3x3: to allow making manipulation(rotation/translation movements) on the clock whileon analog mode
+  
 ### Functional Requirements
 - **Matrix Transformations**: 
   - Utility functions allow defining and transforming 3x3 matrices.
+  - (extra)ClockUtilities: to allow retreiving the hours, minutes and seconds more efficiently. 
+  - (extra)DisplayUtilities: to manage display toggling between analog and digital mode.
   - Apply translation, rotation, and scaling to points.
 
 - **New Clock Type (Analog)**: 
@@ -70,7 +72,7 @@ The developped utilities classes are:
   - Animations are powered by matrix transformations not css API. 
 
 ### UML Class Diagram for Part C
-![UML Diagram Part C](uml_part_c.png)
+![UML Diagram Part C](documentation-uml/images/partC-uml.png)
 
 ### Result - UI for Part C
-![UI for Part C](ui_part_c.png)
+![UI for Part C](documentation-uml/images/partC-Result.png)
