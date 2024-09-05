@@ -1,6 +1,7 @@
 # Clock Application - README
-
-## Table of Contents
+### The project contains three branches, each branch corresponding to a part of the project.
+### The master branch contains the latest code -- same as branch Part-C 
+## Table of Contents 
 1. [Part A - Create a Watch](#part-a---create-a-watch)
 2. [Part B - Extend Your Watch](#part-b---extend-your-watch)
 3. [Part C - Further Extend Your Watch](#part-c---further-extend-your-watch)
