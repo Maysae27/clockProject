@@ -53,6 +53,9 @@ export class ClockView {
         const clockElement = this.template.content.cloneNode(true) as HTMLElement;
         DisplayViewUtils.setElementIds(clockElement, index, getClockElementIds());
         this.attachDisplayModeToggle(clockElement, index);
+        // Get the clock hands element to hide them
+        const clockHands = clockElement.querySelector('.clock-hands') as HTMLElement;
+        DisplayViewUtils.hideElement(clockHands);  // digital mode
         return clockElement;
     }
 

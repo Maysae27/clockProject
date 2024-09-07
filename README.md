@@ -59,7 +59,6 @@ This was important to reduce the responsibility of the clock view/controller as 
 
 ## Part C - Further Extend Your Watch
 In this part I refactored the code again, adding new utility classes besides the required Matrix3x3. This was important to reduce again the responsibility for the clock view/controller. This part was also marked by introducing a new display mode for the clock: the analog mode.
-I still have a little problem with display, when a clock is created for the first time(digital mode is default), the clock hands appear. However, upon switching mode to analog and then switching back to digital, the clock hands disappear(normal behaviour). I am still working on fixing this little issue :)
   
 ### Functional Requirements
 - **Matrix Transformations**: 
